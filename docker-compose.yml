@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
   ens-data-source:
-    image: ens_bedrock_resolver:latest
+    image: dm3org/ens-bedrock-resolver:v0.0.1
     restart: always
     environment:
       L2_PROVIDER_URL: "$L2_PROVIDER_URL"
@@ -11,7 +11,7 @@ services:
       - "8887:8887"           
 
   ccip-resolver:
-    image: ccip-resolver:latest
+    image: dm3org/ccip-resolver:v0.0.1
     restart: always
     environment:
       CONFIG: |

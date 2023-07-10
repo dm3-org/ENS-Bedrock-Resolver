@@ -21,7 +21,6 @@ export function EnsBedrockHandler(provider: ethers.providers.StaticJsonRpcProvid
             const calldata = req.params.calldata.replace('.json', '');
             try {
                 const response = await handleBedrockCcipRequest(l2PublicResolver, calldata);
-                console.log(response)
 
                 if (!response) {
                     return res.status(404).send({ message: `unsupported signature` });
