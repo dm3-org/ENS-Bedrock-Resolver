@@ -1,14 +1,29 @@
 version: "3.6"
 
 services:
-  ccip-resolver:
-    image: dm3org/offchain-resolver:v0.0.2
+  ens-data-source:
+    image: ens_bedrock_resolver:latest
     restart: always
     environment:
-          SIGNER_PRIVATE_KEY: ${SIGNER_PRIVATE_KEY}
-          CONFIG: '{"0x410ebbabb4471e9c18cc36642f4057812e125e94":{"type":"signing","handlerUrl":"http://host.docker.internal:8887"}}'
+      L2_PROVIDER_URL: "$L2_PROVIDER_URL"
+      L2_RESOLVER_ADDRESS: "$L2_RESOLVER_ADDRESS"
+    ports: 
+      - "8887:8887"           
+
+  ccip-resolver:
+    image: ccip-resolver:latest
+    restart: always
+    environment:
+      CONFIG: |
+        {
+          "0x410ebbabb4471e9c18cc36642f4057812e125e94": {
+            "type": "optimism-bedrock",
+            "handlerUrl": "http://ens-data-source:8887",
+            "l1ProviderUrl": "$L1_PROVIDER_URL",
+            "l2ProviderUrl": "$L2_PROVIDER_URL",
+            "l1chainId": "5",
+            "l2chainId": "420"
+          }
+        }
     ports:
-    - "8081:8081"
-        
-
-
+      - "8081:8081"
