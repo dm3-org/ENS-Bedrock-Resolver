@@ -1,26 +1,25 @@
 import { getResolverInterface } from "../utils/getResolverInterface";
 
+import { L2PublicResolver } from "../../typechain";
+import { StorageLayout } from "../profiles/StorageLayout";
 import { decodeAbi } from "../profiles/abi/decodeAbi";
 import { getSlotForAbi } from "../profiles/abi/getSlotForAbi";
 import { decodeAddr } from "../profiles/addr/decodeAddr";
 import { getSlotForAddr } from "../profiles/addr/getSlotForAddr";
+import { decodeContentHash } from "../profiles/contentHash/decodeContentHash";
 import { getSlotForContentHash } from "../profiles/contentHash/getSlotForContentHash";
+import { decodeDNSRecord } from "../profiles/dns/dnsRecord/decodeDnsRecord";
 import { getSlotForDnsRecord } from "../profiles/dns/dnsRecord/getSlotForDnsRecord";
+import { decodeHasDNSRecords } from "../profiles/dns/hasDnsRecord/decodeHasDnsRecords";
 import { getSlotForHasDnsRecords } from "../profiles/dns/hasDnsRecord/getSlotForHasDnsRecord";
+import { decodeZonehash } from "../profiles/dns/zonehash/decodeZonehash";
 import { getSlotForZoneHash } from "../profiles/dns/zonehash/getSlotForZonehash";
+import { decodeName } from "../profiles/name/decodeName";
 import { getSlotForName } from "../profiles/name/getSlotForName";
+import { decodePubkey } from "../profiles/pubkey/decodePubKey";
 import { getSlotForPubkeyX } from "../profiles/pubkey/getStorageSlotForPubkey";
 import { decodeText } from "../profiles/text/decodeText";
 import { getSlotForText } from "../profiles/text/getSlotForText";
-import { decodeContentHash } from "../profiles/contentHash/decodeContentHash";
-import { decodeName } from "../profiles/name/decodeName";
-import { decodePubkey } from "../profiles/pubkey/decodePubKey";
-import { decodeDNSRecord } from "../profiles/dns/dnsRecord/decodeDnsRecord";
-import { decodeHasDNSRecords } from "../profiles/dns/hasDnsRecord/decodeHasDnsRecords";
-import { decodeZonehash } from "../profiles/dns/zonehash/decodeZonehash";
-import { L2PublicResolver } from "../../typechain";
-import { StorageLayout } from "../profiles/StorageLayout";
-import { ethers } from "ethers";
 
 export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver, calldata: string) {
     try {
@@ -39,14 +38,9 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
             case "text(bytes32,string)":
                 {
                     const { node, record } = decodeText(context, args);
-                    console.log(context, node, record);
 
                     const slot = await getSlotForText(l2PubicResolver, context, node, record)
                     const result = await l2PubicResolver.text(context, node, record)
-
-                    console.log(result)
-                    console.log(l2Resolverinterface.encodeFunctionResult("text(bytes32,string)", [result]))
-                    console.log(ethers.utils.defaultAbiCoder.encode(["string"], [result]))
 
                     return {
                         slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
