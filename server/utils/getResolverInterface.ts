@@ -3,12 +3,13 @@ import { ethers } from "ethers";
 //TODO maybe remove everything except resolveWithProof
 export function getResolverInterface() {
     return new ethers.utils.Interface([
-        "function resolve(bytes calldata name, bytes calldata data) external view returns(bytes)",
+        "function resolveWithContext(bytes calldata name,bytes calldata data,bytes calldata context) external view returns (bytes memory result)",
         // eslint-disable-next-line max-len
         "function resolveWithProof(bytes calldata response, bytes calldata extraData) external view returns (bytes memory)",
         //Text
         "function text(bytes32 node, string calldata key) external view returns (string memory)",
         //Address
+        "function resolveWithAddress(bytes calldata response, bytes calldata extraData) public view returns (address)",
         "function addr(bytes32 node) external view returns (address)",
         //ABI
         "function ABI(bytes calldata context,bytes32 node,uint256 contentTypes) external view returns(uint256, bytes memory)",
