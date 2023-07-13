@@ -26,7 +26,7 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
         const l2Resolverinterface = getResolverInterface();
 
         //Parse the calldata returned by the contract
-        const [context, data] = l2Resolverinterface.parseTransaction({
+        const [name, data, context] = l2Resolverinterface.parseTransaction({
             data: calldata,
         }).args;
 
@@ -38,10 +38,11 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
             case "text(bytes32,string)":
                 {
                     const { node, record } = decodeText(context, args);
-
                     const slot = await getSlotForText(l2PubicResolver, context, node, record)
                     const result = await l2PubicResolver.text(context, node, record)
 
+                    console.log("slot for text : ", slot)
+                    console.log("result for text : ", result)
                     return {
                         slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
                         result: l2Resolverinterface.encodeFunctionResult("text(bytes32,string)", [result])
@@ -51,11 +52,15 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                 {
                     const { node } = decodeAddr(context, args);
                     const slot = await getSlotForAddr(l2PubicResolver, context, node, 60);
-                    const result = await l2PubicResolver["addr(bytes,bytes32)"](context, node,)
+                    const result = await l2PubicResolver.provider.getStorageAt(l2PubicResolver.address, slot)
+
+                    console.log("slot for address : ", slot)
+                    console.log("result for address : ", result)
+
 
                     return {
-                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
-                        result: l2Resolverinterface.encodeFunctionResult("addr(bytes,bytes32)", [result])
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.FIXED,
+                        result
                     }
                 }
             case "ABI(bytes,bytes32,uint256)":
@@ -108,7 +113,7 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                 return null
         }
     } catch (err: any) {
-        console.log("[Handle Bedrock request Calldata] Cant resolve request ");
+        console.log("[Handle Bedrock request ] Cant resolve request ");
         console.log(err);
         throw err;
     }

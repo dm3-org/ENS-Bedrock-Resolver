@@ -30,7 +30,7 @@ describe("EnsHandler", () => {
 
             await l2PublicResolver.connect(alice)["setAddr(bytes,address)"](dnsName, alice.address);
 
-            const ccipRequest = getCcipRequest("addr", alice.address, node);
+            const ccipRequest = getCcipRequest("addr", name, alice.address, node);
             console.log(ccipRequest);
 
             const res = await request(expressApp).get(`/${ethers.constants.AddressZero}/${ccipRequest}`).send();
@@ -47,7 +47,7 @@ describe("EnsHandler", () => {
             const node = ethers.utils.namehash(name);
 
             await l2PublicResolver.connect(alice).setName(dnsName, "alice");
-            const ccipRequest = getCcipRequest("name", alice.address, alice.address, node);
+            const ccipRequest = getCcipRequest("name", name, alice.address, alice.address, node);
 
             const res = await request(expressApp).get(`/${ethers.constants.AddressZero}/${ccipRequest}`).send();
             const { slot, target } = res.body;
@@ -64,7 +64,7 @@ describe("EnsHandler", () => {
             const node = ethers.utils.namehash(name);
 
             await l2PublicResolver.connect(alice).setText(dnsName, "my-record", "my-record-value");
-            const ccipRequest = getCcipRequest("text", alice.address, node, "my-record");
+            const ccipRequest = getCcipRequest("text", name, alice.address, node, "my-record");
 
             const res = await request(expressApp).get(`/${ethers.constants.AddressZero}/${ccipRequest}`).send();
             const { slot, target } = res.body;
@@ -82,7 +82,7 @@ describe("EnsHandler", () => {
 
             await l2PublicResolver.connect(alice).setABI(dnsName, 1, ethers.utils.toUtf8Bytes("0xabc"));
 
-            const ccipRequest = getCcipRequest("ABI", alice.address, alice.address, node, "1");
+            const ccipRequest = getCcipRequest("ABI", name, alice.address, alice.address, node, "1");
 
             const res = await request(expressApp).get(`/${ethers.constants.AddressZero}/${ccipRequest}`).send();
             const { slot, target } = res.body;
@@ -94,9 +94,9 @@ describe("EnsHandler", () => {
     });
 });
 
-const getCcipRequest = (sig: string, context: string, ...args: string[]) => {
+const getCcipRequest = (sig: string, name: string, context: string, ...args: string[]) => {
     const iface = getResolverInterface();
     const innerReq = iface.encodeFunctionData(sig, args);
-    const outerReq = iface.encodeFunctionData("resolve", [context, innerReq]);
+    const outerReq = iface.encodeFunctionData("resolveWithContext", [name, innerReq, context]);
     return outerReq;
 };

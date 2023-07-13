@@ -3,10 +3,10 @@
     "version": "1.0.0",
     "description": "",
     "scripts": {
-        "debug": "npx hardhat test",
+        "debug": "npx hardhat test " ,
         "compile": "hardhat compile",
-        "test:e2e": "docker-compose -f  ./docker/docker-compose-e2e.yml up -d  && npx hardhat test",
-        "test": "hardhat test ",
+        "test:e2e": "docker-compose -f  ./docker/docker-compose-e2e.yml up -d  && npx hardhat test test/e2e/**",
+        "test": "hardhat test ./test/contracts/**",
         "test:e2e-setup": "npx hardhat run scripts/e2e/setupBedrockTestEnvironment.ts",
         "lint:fix": "prettier --write 'scripts/**/*.{js,ts}' 'test/**/*.{js,ts}' 'tasks/**/*.{js,ts}' && tslint --fix --config tslint.json --project tsconfig.json && solhint contracts/**/*.sol",
         "lint": "tslint --config tslint.json --project tsconfig.json && solhint contracts/**/*.sol",
