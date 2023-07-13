@@ -13,6 +13,7 @@ import "hardhat-tracer";
 import { ethers } from "ethers";
 
 const OPTIMISTIC_ETHERSCAN_API_KEY = process.env.OPTIMISTIC_ETHERSCAN_API_KEY;
+const GOERLI_ETHERSCAN_API_KEY = process.env.GOERLI_ETHERSCAN_API_KEY;
 
 const GOERLI_URL = process.env.L1_PROVIDER_URL ?? "";
 const DEPLOYER_PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY ?? ethers.Wallet.createRandom().privateKey;
@@ -32,7 +33,8 @@ module.exports = {
     },
     etherscan: {
         apiKey: {
-            optimismGoerli: OPTIMISTIC_ETHERSCAN_API_KEY
+            optimismGoerli: OPTIMISTIC_ETHERSCAN_API_KEY,
+            goerli: GOERLI_ETHERSCAN_API_KEY
         },
         customChains: [
             {
