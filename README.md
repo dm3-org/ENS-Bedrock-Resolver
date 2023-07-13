@@ -60,7 +60,7 @@ To run a gateway perform the following steps
 
 ## Goerli
 
-CCIP Resolver : 0x410EBbabB4471e9c18CC36642F4057812E125e94
+CCIP Resolver : 0x009Cc2e04808B906BdAf5a570BD14c519AbB6F16
 BedrockCcipVerifier : 0x6eFc563E6c269B137F1362580Cc04F054204a352
 ## Optimsim Goerli
 
