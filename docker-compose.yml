@@ -16,7 +16,7 @@ services:
     environment:
       CONFIG: |
         {
-          "0x410ebbabb4471e9c18cc36642f4057812e125e94": {
+          "0xAFb5B5032d920C8158E541c6326CE63BAF60aAbf": {
             "type": "optimism-bedrock",
             "handlerUrl": "http://ens-data-source:8887",
             "l1ProviderUrl": "$L1_PROVIDER_URL",

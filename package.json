@@ -1,21 +1,21 @@
 {
     "name": "ens_bedrock_resolver",
-    "version": "1.0.0",
+    "version": "0.0.2",
     "description": "",
     "scripts": {
-        "debug":"npx hardhat test",
+        "debug": "npx hardhat test " ,
         "compile": "hardhat compile",
-        "test:e2e":"docker-compose -f  ./docker/docker-compose-e2e.yml up -d   &&",
-        "test": "hardhat test ",
-        "test:e2e-setup":"npx hardhat run scripts/e2e/setupBedrockTestEnvironment.ts",
+        "test:e2e": "docker-compose -f  ./docker/docker-compose-e2e.yml up -d  && npx hardhat test test/e2e/**",
+        "test": "hardhat test ./test/contracts/**",
+        "test:e2e-setup": "npx hardhat run scripts/e2e/setupBedrockTestEnvironment.ts",
         "lint:fix": "prettier --write 'scripts/**/*.{js,ts}' 'test/**/*.{js,ts}' 'tasks/**/*.{js,ts}' && tslint --fix --config tslint.json --project tsconfig.json && solhint contracts/**/*.sol",
         "lint": "tslint --config tslint.json --project tsconfig.json && solhint contracts/**/*.sol",
         "format": "prettier --check \"**/*.{ts,js,sol}\"",
         "format:fix": "prettier --write \"**/*.{ts,js,sol}\"",
         "build": "yarn hardhat compile && yarn tsc -p tsconfig-build.json",
         "dev": " node dist/server/index.js",
-        "docker:build": "docker build -t ens_bedrock_resolver -f ./Dockerfile .",
-        "start":"docker compose up -d "
+        "docker:build": "docker build -t ens-bedrock-resolver -f ./Dockerfile .",
+        "start": "docker compose up -d "
     },
     "files": [
         "dist/src/",
@@ -82,6 +82,7 @@
         "@ensdomains/ens-contracts": "^0.0.19",
         "@eth-optimism/contracts": "^0.5.40",
         "@eth-optimism/sdk": "^2.0.2",
+        "ccip-resolver": "0.0.4",
         "cors": "^2.8.5",
         "ens-contracts-legacy": "https://github.com/ensdomains/resolvers.git#v0.1.7",
         "express": "^4.18.2",

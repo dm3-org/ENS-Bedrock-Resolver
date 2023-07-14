@@ -1,9 +1,8 @@
-import { BigNumber } from "ethers";
 import hre, { ethers } from "hardhat";
 
-const ENS_NAME = "bob123.eth";
+const ENS_NAME = "alice123.eth";
 
-const CCIP_RESOLVER_ADDRESS = "0x410EBbabB4471e9c18CC36642F4057812E125e94";
+const CCIP_RESOLVER_ADDRESS = "0xAFb5B5032d920C8158E541c6326CE63BAF60aAbf";
 const NAME_WRAPPER = "0x114D4603199df73e7D157787f8778E21fCd13066";
 
 export const setCcipResolver = async () => {
