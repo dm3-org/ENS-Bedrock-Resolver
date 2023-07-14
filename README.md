@@ -69,7 +69,7 @@ To run a gateway perform the following steps
 
 ## Goerli
 
-CCIP Resolver : 0x009Cc2e04808B906BdAf5a570BD14c519AbB6F16
+CCIP Resolver : 0xAFb5B5032d920C8158E541c6326CE63BAF60aAbf
 L2PublicResolverVerifier : 0xa7B04b95E458B1146Ca7aA92449B52d0617c5b17
 
 ## Optimsim Goerli
