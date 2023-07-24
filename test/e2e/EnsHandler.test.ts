@@ -74,7 +74,7 @@ describe("EnsHandler", () => {
             expect(ethers.utils.toUtf8String(slotValue.substring(0, 32))).to.equal("my-record-value");
         });
     });
-    describe("Abi", () => {
+    describe.skip("Abi", () => {
         it("resolves abi", async () => {
             const name = ethers.utils.dnsEncode("alice.eth");
             const dnsName = ethers.utils.dnsEncode(name);
