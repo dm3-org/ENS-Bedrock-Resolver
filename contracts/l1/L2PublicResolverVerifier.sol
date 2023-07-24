@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.17;
 import {BedrockCcipVerifier} from "ccip-resolver/contracts/verifier/optimism-bedrock/BedrockCcipVerifier.sol";
 import {IBedrockProofVerifier} from "ccip-resolver/contracts/verifier/optimism-bedrock/IBedrockProofVerifier.sol";
 import {IResolverService} from "ccip-resolver/contracts/IExtendedResolver.sol";
 
 contract L2PublicResolverVerifier is BedrockCcipVerifier {
-    constructor(IBedrockProofVerifier _bedrockProofVerifier, address _target) BedrockCcipVerifier(_bedrockProofVerifier, _target) {}
+    constructor(
+        address _owner,
+        string memory _graphqlUrl,
+        IBedrockProofVerifier _bedrockProofVerifier,
+        address _target
+    ) BedrockCcipVerifier(_owner, _graphqlUrl, _bedrockProofVerifier, _target) {}
 
     function resolveWithProof(bytes calldata response, bytes calldata extraData) public view override returns (bytes memory) {
         bytes memory encodedResponse = super.resolveWithProof(response, extraData);
