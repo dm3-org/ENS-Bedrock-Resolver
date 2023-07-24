@@ -7,7 +7,7 @@ services:
       L2_RESOLVER_ADDRESS: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
 
   ccip-resolver:
-    image: dm3org/ccip-resolver:v0.0.1
+    image: dm3org/ccip-resolver:v0.1.1
     restart: always
     environment:
       CONFIG: |

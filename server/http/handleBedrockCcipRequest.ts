@@ -41,11 +41,19 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                     const slot = await getSlotForText(l2PubicResolver, context, node, record)
                     const result = await l2PubicResolver.text(context, node, record)
 
-                    console.log("slot for text : ", slot)
-                    console.log("result for text : ", result)
                     return {
                         slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
                         result: l2Resolverinterface.encodeFunctionResult("text(bytes32,string)", [result])
+                    }
+                }
+            case "name(bytes,bytes32)":
+                {
+                    const { node } = decodeName(context, args);
+                    const slot = await getSlotForName(l2PubicResolver, context, node);
+                    const result = await l2PubicResolver.name(context, node)
+                    return {
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                        result: l2Resolverinterface.encodeFunctionResult("name(bytes,bytes32)", [result])
                     }
                 }
             case "addr(bytes32)":
@@ -53,11 +61,6 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                     const { node } = decodeAddr(context, args);
                     const slot = await getSlotForAddr(l2PubicResolver, context, node, 60);
                     const result = await l2PubicResolver.provider.getStorageAt(l2PubicResolver.address, slot)
-
-                    console.log("slot for address : ", slot)
-                    console.log("result for address : ", result)
-
-
                     return {
                         slot, target: l2PubicResolver.address, layout: StorageLayout.FIXED,
                         result
@@ -67,46 +70,44 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                 {
                     const { node, contentTypes } = decodeAbi(context, args);
                     const slot = await getSlotForAbi(l2PubicResolver, context, node, contentTypes);
-                    return { slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC }
+                    const result = await l2PubicResolver.ABI(context, node, contentTypes)
+ 
+                    return {
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                        result: l2Resolverinterface.encodeFunctionResult("ABI(bytes,bytes32,uint256)", [contentTypes, result])
+                    }
                 }
             case "contenthash(bytes32)":
                 {
                     const { node } = decodeContentHash(context, args);
                     const slot = await getSlotForContentHash(l2PubicResolver, context, node);
-                    return { slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC }
+                    const result = await l2PubicResolver.contenthash(context, node)
+                    return {
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                        result: l2Resolverinterface.encodeFunctionResult("contenthash(bytes32)", [result])
+                    }
+                }
 
-                }
-            case "name(bytes,bytes32)":
-                {
-                    const { node } = decodeName(context, args);
-                    const slot = await getSlotForName(l2PubicResolver, context, node);
-                    return { slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC }
-
-                }
-            case "pubkey(bytes,bytes32)":
-                {
-                    const { node } = decodePubkey(context, args);
-                    const slot = await getSlotForPubkeyX(l2PubicResolver, context, node);
-                    return { slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC }
-                }
             case "dnsRecord(bytes,bytes32,bytes32,uint16)":
                 {
                     const { node, name, resource } = decodeDNSRecord(context, args)
-                    const slot = getSlotForDnsRecord(l2PubicResolver, context, node, name, resource)
-                    return { slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC }
+                    const slot = await getSlotForDnsRecord(l2PubicResolver, context, node, name, resource)
+                    const result = await l2PubicResolver.dnsRecord(context, node, name, resource)
 
-                }
-            case "hasDNSRecords(bytes,bytes32,bytes32)":
-                {
-                    const { node, name } = decodeHasDNSRecords(context, args)
-                    const slot = await getSlotForHasDnsRecords(l2PubicResolver, context, node, name)
-                    return { slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC }
+                    return {
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                        result: l2Resolverinterface.encodeFunctionResult("dnsRecord(bytes,bytes32,bytes32,uint16)", [result])
+                    }
                 }
             case "zonehash(bytes,bytes32)":
                 {
-                    const { node, name } = decodeZonehash(context, args)
-                    const slot = await getSlotForZoneHash(l2PubicResolver, context, node, name)
-                    return { slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC }
+                    const { node } = decodeZonehash(context, args)
+                    const slot = await getSlotForZoneHash(l2PubicResolver, context, node)
+                    const result = await l2PubicResolver.zonehash(context, node)
+                    return {
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                        result: l2Resolverinterface.encodeFunctionResult("zonehash(bytes,bytes32)", [result])
+                    }
                 }
             default:
                 //Unsupported signature

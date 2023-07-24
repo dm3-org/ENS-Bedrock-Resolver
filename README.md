@@ -2,6 +2,19 @@
 
 This is an App specific handler to store ENS records on Optimism. It uses a forked version of the ENS Public Resolver and a server acting as a gateway.
 
+# L2PubicResolver
+TBD explain 
+
+the following profiles are supported 
+
+* text
+* address
+* contenthash
+* name
+* dnsRecord
+* ZoneHash
+
+
 # Setup
 
 ## Install
@@ -69,13 +82,12 @@ To run a gateway perform the following steps
 
 ## Goerli
 
-CCIP Resolver : 0xAFb5B5032d920C8158E541c6326CE63BAF60aAbf
-L2PublicResolverVerifier : 0xa7B04b95E458B1146Ca7aA92449B52d0617c5b17
+CCIP Resolver : 0x49e0AeC78ec0dF50852E99116E524a43bE91B789
+
+L2PublicResolverVerifier : 0x67AfD6d796d9212541016A2D10b28CC55021Cade
 
 ## Optimsim Goerli
 
 L2PublicResolver: 0x39Dc8A3A607970FA9F417D284E958D4cA69296C8
 
-```
 
-```

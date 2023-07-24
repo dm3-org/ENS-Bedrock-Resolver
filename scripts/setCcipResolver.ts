@@ -2,7 +2,7 @@ import hre, { ethers } from "hardhat";
 
 const ENS_NAME = "alice123.eth";
 
-const CCIP_RESOLVER_ADDRESS = "0xAFb5B5032d920C8158E541c6326CE63BAF60aAbf";
+const CCIP_RESOLVER_ADDRESS = "0x49e0AeC78ec0dF50852E99116E524a43bE91B789";
 const NAME_WRAPPER = "0x114D4603199df73e7D157787f8778E21fCd13066";
 
 export const setCcipResolver = async () => {
@@ -18,7 +18,10 @@ export const setCcipResolver = async () => {
         data,
         gasLimit: 56631,
     });
-    await tx.wait();
+    console.log("Transaction hash: ", tx.hash);
+    const rec = await tx.wait();
+    console.log(`CCIP resolver for domain ${ENS_NAME} set to ${CCIP_RESOLVER_ADDRESS} `);
+
 };
 
 setCcipResolver();

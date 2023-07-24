@@ -114,12 +114,10 @@ const setupBedrockTestEnvironment = async () => {
     console.log(`L2 Foreign resolver deployed at ${foreignResolver.address}`);
 
     ccipResolver = await new CcipResolver__factory().connect(l1Whale).deploy(
-        whale.address,
-        //TBD add registry address
+
         ensRegistry.address,
-        //TBD add namewrapper address
         ethers.constants.AddressZero,
-        "localhost:8000/graphql"
+
     );
     console.log(`CcipResolver deployed at ${ccipResolver.address}`);
 
@@ -129,18 +127,18 @@ const setupBedrockTestEnvironment = async () => {
 
     l2PublicResolverVerifier = await new L2PublicResolverVerifier__factory()
         .connect(l1Whale)
-        .deploy(bedrockProofVerifier.address, l2PublicResolver.address);
+        .deploy(whale.address, "localhost:8000/graphql", bedrockProofVerifier.address, l2PublicResolver.address);
 
     console.log(`BedrockCcipVerifier deployed at ${l2PublicResolverVerifier.address}`);
 
     //Setup resolver for alice.eth
-    const fuck = await ccipResolver
+    const ccipResolverTx = await ccipResolver
         .connect(l1Alice)
-        .setVerifierForDomain(ethers.utils.namehash("alice.eth"), l2PublicResolverVerifier.address, "http://localhost:8081/{sender}/{data}", {
+        .setVerifierForDomain(ethers.utils.namehash("alice.eth"), l2PublicResolverVerifier.address, ["http://localhost:8081/{sender}/{data}"], {
             gasLimit: 1000000,
         });
 
-    await fuck.wait()
+    await ccipResolverTx.wait()
 
     console.log(`${alice.address} funded with ${await l2Provider.getBalance(alice.address)}`);
     console.log(`${bob.address} funded with ${await l2Provider.getBalance(bob.address)}`);
