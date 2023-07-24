@@ -20,8 +20,6 @@ export function getResolverInterface() {
         "function interfaceImplementer (bytes calldata context, bytes32 node, bytes4 interfaceID) external view returns (address)",
         //Name
         "function name(bytes calldata context ,bytes32 node) external view returns (string memory)",
-        //Pubkey
-        "function pubkey(bytes calldata context ,bytes32 node) external view returns (bytes memory x, bytes memory y)",
         //DNS
         "function dnsRecord(bytes calldata context,bytes32 node,bytes32 name,uint16 resource) public view  returns(bytes memory)",
         "function hasDNSRecords(bytes calldata context, bytes32 node, bytes32 name) public view  returns (bool)",
