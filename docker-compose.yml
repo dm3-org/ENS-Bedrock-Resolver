@@ -11,7 +11,7 @@ services:
             - "8887:8887"
 
     ccip-resolver:
-        image: dm3org/ccip-resolver:v0.1.0
+        image: dm3org/ccip-resolver:v0.1.1
         restart: always
         environment:
             CONFIG: |
