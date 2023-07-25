@@ -6,13 +6,10 @@ import {
     CcipResolver,
     CcipResolver__factory
 } from "ccip-resolver-js/dist/typechain";
-import { ethers } from "ethers";
-import { dnsEncode, keccak256, toUtf8Bytes } from "ethers/lib/utils";
+import { BigNumber, ethers } from "ethers";
+import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
 import { ethers as hreEthers } from "hardhat";
-import request from "supertest";
-import { L2PublicResolver, L2PublicResolver__factory } from "../../typechain";
 import { dnsWireFormat } from "../helper/encodednsWireFormat";
-import { getGateWayUrl } from "../helper/getGatewayUrl";
 const { expect } = require("chai");
 
 describe("E2E Test", () => {
@@ -51,7 +48,6 @@ describe("E2E Test", () => {
                 deliveryServices: ["foo.dm3"],
             };
 
-
             const text = await resolver.getText("network.dm3.eth");
 
             expect(text).to.eql(JSON.stringify(profile));
@@ -75,6 +71,31 @@ describe("E2E Test", () => {
 
             expect(achtualhash).to.equal("ipfs://QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4");
         });
+        it("ccip gateway resolves existing abi using ethers.provider.getABI", async () => {
+            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
+
+            const iface = new ethers.utils.Interface([
+                "function ABI(bytes32 node, uint256 contextType) external view returns (uint256, bytes memory)",
+            ]);
+
+            const sig = iface.encodeFunctionData("ABI",
+                [ethers.utils.namehash("alice.eth"), 1]
+            )
+
+            const encodedRes = await resolver._fetch(sig);
+
+            const [decodedRes] = ethers.utils.defaultAbiCoder.decode(["bytes"], encodedRes)
+
+
+            const ress = iface.decodeFunctionResult("ABI", decodedRes);
+     
+            const [actualContextType, actualAbi] = ress
+            const expectedAbi = new BedrockProofVerifier__factory().interface.format(ethers.utils.FormatTypes.json)
+
+            expect(BigNumber.from(actualContextType).toNumber()).to.equal(1)
+            expect(Buffer.from(actualAbi.slice(2), "hex").toString()).to.equal(expectedAbi);
+        });
+
 
 
         it("ccip gateway resolves existing name ", async () => {

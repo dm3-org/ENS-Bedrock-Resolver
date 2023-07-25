@@ -30,6 +30,7 @@ module.exports = {
             accounts: [DEPLOYER_PRIVATE_KEY],
         },
         localhost: {},
+
     },
     etherscan: {
         apiKey: {

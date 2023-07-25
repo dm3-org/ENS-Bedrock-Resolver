@@ -56,7 +56,7 @@ describe("L2PublicResolverVerifier", () => {
         expect(ethers.utils.toUtf8String(resBytes)).to.equal("bar")
     })
 
-    it.only("resolveWithAbi", async () => {
+    it("resolveWithAbi", async () => {
         const [owner] = await ethers.getSigners()
         const bedrockProofVerifier: FakeContract<BedrockProofVerifier> = await smock.fake<BedrockProofVerifier>("ccip-resolver/contracts/verifier/optimism-bedrock/IBedrockProofVerifier.sol:IBedrockProofVerifier") as FakeContract<BedrockProofVerifier>
 
