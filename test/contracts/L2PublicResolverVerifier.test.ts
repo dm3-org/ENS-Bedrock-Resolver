@@ -1,8 +1,10 @@
 import { FakeContract, smock } from "@defi-wonderland/smock";
-import { BedrockProofVerifier } from "ccip-resolver/typechain";
+import { BedrockProofVerifier, BedrockProofVerifier__factory } from "ccip-resolver/dist/typechain";
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
-import { L2PublicResolverVerifier, L2PublicResolverVerifier__factory } from "../../typechain";
+import { L2PublicResolverVerifier, L2PublicResolverVerifier__factory, L2PublicResolver__factory, } from "../../typechain";
+import { RESOLVER_WTIH_ABI_CALLDATA } from "./RESOLVE_WITH_ABI_CALLDATA";
 
 describe("L2PublicResolverVerifier", () => {
 
@@ -53,5 +55,34 @@ describe("L2PublicResolverVerifier", () => {
         const resBytes = await l2PublicResolverVerifier.resolveWithProof(response, extraData)
         expect(ethers.utils.toUtf8String(resBytes)).to.equal("bar")
     })
+
+    it.only("resolveWithAbi", async () => {
+        const [owner] = await ethers.getSigners()
+        const bedrockProofVerifier: FakeContract<BedrockProofVerifier> = await smock.fake<BedrockProofVerifier>("ccip-resolver/contracts/verifier/optimism-bedrock/IBedrockProofVerifier.sol:IBedrockProofVerifier") as FakeContract<BedrockProofVerifier>
+
+        const expectedAbi = new BedrockProofVerifier__factory().interface.format(ethers.utils.FormatTypes.json)
+
+        bedrockProofVerifier.getProofValue.returns(ethers.utils.toUtf8Bytes(expectedAbi.toString()))
+
+
+
+        const l2PublicResolverVerifier: L2PublicResolverVerifier = await new L2PublicResolverVerifier__factory()
+            .connect(owner)
+            .deploy(owner.address, "", bedrockProofVerifier.address, "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0");
+        const cd = RESOLVER_WTIH_ABI_CALLDATA
+
+        const [response, extraData] = new ethers.utils.Interface([
+            "function resolveWithAbi(bytes calldata response, bytes calldata extraData) public view returns (address)"
+        ]).decodeFunctionData("resolveWithAbi", cd)
+
+        const resBytes = await l2PublicResolverVerifier.resolveWithAbi(response, extraData)
+        console.log(resBytes)
+        const [contentType, abi] = ethers.utils.defaultAbiCoder.decode(["uint256", "bytes"], resBytes)
+
+        expect(BigNumber.from(contentType).toNumber()).to.equal(1)
+        expect(ethers.utils.toUtf8String(abi)).to.equal(expectedAbi.toString())
+    })
+
+
 
 })

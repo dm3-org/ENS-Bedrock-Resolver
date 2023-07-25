@@ -12,7 +12,7 @@ export function getResolverInterface() {
         "function resolveWithAddress(bytes calldata response, bytes calldata extraData) public view returns (address)",
         "function addr(bytes32 node) external view returns (address)",
         //ABI
-        "function ABI(bytes calldata context,bytes32 node,uint256 contentTypes) external view returns(uint256, bytes memory)",
+        "function ABI(bytes32 node,uint256 contentTypes) external view returns(uint256, bytes memory)",
         //ContentHash
         "function contenthash(bytes calldata context, bytes32 node) external view returns (bytes memory)",
         "function contenthash(bytes32 node) external view returns (bytes memory)",

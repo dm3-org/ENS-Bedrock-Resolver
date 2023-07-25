@@ -195,11 +195,16 @@ const setupBedrockTestEnvironment = async () => {
     };
     const prepareSetAbi = async () => {
         const name = dnsEncode("alice.eth");
-        const abi = l2PublicResolver.interface.format(ethers.utils.FormatTypes.json);
+        const abi = bedrockProofVerifier.interface.format(ethers.utils.FormatTypes.json);
 
-        await l2PublicResolver.connect(alice.connect(l2Provider)).setABI(name, 1, ethers.utils.toUtf8Bytes(abi.toString()), {
-            gasLimit: 1000000,
+        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setABI(name, 1, ethers.utils.toUtf8Bytes(abi.toString()), {
+            gasLimit: 10000000,
         });
+
+        console.log(abi)
+
+        await tx.wait();
+        console.log("ABI set")
     };
     const prepareSetContentHash = async () => {
         const name = dnsEncode("alice.eth");
