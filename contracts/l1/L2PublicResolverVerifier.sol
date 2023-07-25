@@ -6,6 +6,7 @@ import {IResolverService} from "ccip-resolver/contracts/IExtendedResolver.sol";
 
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
+
 contract L2PublicResolverVerifier is BedrockCcipVerifier {
     constructor(
         address _owner,
@@ -27,9 +28,9 @@ contract L2PublicResolverVerifier is BedrockCcipVerifier {
 
     function resolveWithAbi(bytes calldata response, bytes calldata extraData) public view returns (bytes memory) {
         bytes memory encodedResponse = super.resolveWithProof(response, extraData);
-        
+
         (, bytes memory data) = abi.decode(extraData[4:], (bytes, bytes));
-        (, , uint contentType) = abi.decode(BytesLib.slice(data, 4, data.length - 4), (bytes, bytes32, uint));
+        (, uint contentType) = abi.decode(BytesLib.slice(data, 4, data.length - 4), (bytes32, uint));
 
         return abi.encode(contentType, abi.decode(encodedResponse, (bytes)));
     }
