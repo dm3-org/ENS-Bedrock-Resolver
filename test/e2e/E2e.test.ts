@@ -10,6 +10,7 @@ import { BigNumber, ethers } from "ethers";
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
 import { ethers as hreEthers } from "hardhat";
 import { dnsWireFormat } from "../helper/encodednsWireFormat";
+import { addAbortSignal } from "stream";
 const { expect } = require("chai");
 
 describe("E2E Test", () => {
@@ -57,10 +58,17 @@ describe("E2E Test", () => {
 
             expect(text).to.eql("bar");
         });
-        it("ccip gateway resolves existing profile using ethers.provider.getAddress()", async () => {
+        it("ccip gateway resolves existing address using ethers.provider.getAddress()", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
             const addr = await resolver.getAddress();
             expect(addr).to.equal(alice.address);
+        });
+        it("ccip gateway resolves existing blockchain address using ethers.provider.getAddress()", async () => {
+            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
+            const addr = await resolver.getAddress(0);
+
+            expect(addr).to.equal("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa");
+
         });
         it("ccip gateway resolves existing contenthash ethers.provider.getContenthash", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");

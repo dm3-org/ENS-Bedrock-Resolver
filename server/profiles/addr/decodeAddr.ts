@@ -8,5 +8,6 @@ Decodes the call data of addr(bytes 32)
 */
 export function decodeAddr(context: string, data: ethers.utils.Result) {
     const node = data.node;
-    return { node, context };
+    const coinType = data.coinType;
+    return { node, context, coinType };
 }

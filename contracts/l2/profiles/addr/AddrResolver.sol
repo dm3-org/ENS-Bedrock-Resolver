@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "../ResolverBase.sol";
+import {ResolverBase, BytesUtils} from "../ResolverBase.sol";
 import {IAddrResolver} from "./IAddrResolver.sol";
 import {IAddressResolver} from "./IAddressResolver.sol";
-
-import "hardhat/console.sol";
 
 abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase {
     using BytesUtils for bytes;
@@ -43,7 +41,6 @@ abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase 
         if (coinType == COIN_TYPE_ETH) {
             emit AddrChanged(context, name, node, bytesToAddress(a));
         }
-        console.logBytes(a);
         versionable_addresses[recordVersions[context][node]][context][node][coinType] = a;
     }
 

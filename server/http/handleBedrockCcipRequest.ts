@@ -63,6 +63,16 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                         result
                     }
                 }
+            case "addr(bytes32,uint256)": {
+                const { node, coinType } = decodeAddr(context, args);
+                const slot = await getSlotForAddr(l2PubicResolver, context, node, coinType);
+                const result = await l2PubicResolver["addr(bytes,bytes32,uint256)"](context, node, coinType)
+                return {
+                    slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                    result: l2Resolverinterface.encodeFunctionResult("addr(bytes32,uint256)", [result])
+                }
+
+            }
             case "ABI(bytes32,uint256)":
                 {
                     const { node, contentTypes } = decodeAbi(context, args);

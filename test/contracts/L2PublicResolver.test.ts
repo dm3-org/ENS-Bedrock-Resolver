@@ -5,10 +5,10 @@ import { L2PublicResolver } from "typechain";
 
 import { expect } from "chai";
 import { BigNumber } from "ethers";
-import { arrayify, dnsEncode, keccak256, toUtf8Bytes } from "ethers/lib/utils";
+import { dnsEncode, keccak256, toUtf8Bytes } from "ethers/lib/utils";
 import { dnsWireFormat } from "../helper/encodednsWireFormat";
 
-import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder'
+import { formatsByCoinType } from '@ensdomains/address-encoder';
 
 describe("L2PublicResolver", () => {
     let user1: SignerWithAddress;
@@ -119,7 +119,7 @@ describe("L2PublicResolver", () => {
             );
             const tx = await l2PublicResolver["setAddr(bytes,uint256,bytes)"](dnsEncode(name), btcCoinType, decodedBtcAddress);
             const receipt = await tx.wait();
-            const [addressChangedEvent, addrChangedEvent] = receipt.events;
+            const [addressChangedEvent] = receipt.events;
 
             let [eventContext, eventName, eventNode, eventCoinType, eventAddress] = addressChangedEvent.args;
 
@@ -129,6 +129,7 @@ describe("L2PublicResolver", () => {
             expect(eventCoinType.toNumber()).to.equal(0);
 
             const result = await l2PublicResolver["addr(bytes,bytes32,uint256)"](user1.address, node, btcCoinType);
+            console.log(result);
 
             const encodedBtcAddress = cointypeInstance.encoder(Buffer.from(result.slice(2), "hex"));
 
