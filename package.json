@@ -3,7 +3,7 @@
     "version": "0.0.3",
     "description": "",
     "scripts": {
-        "debug": "npx hardhat test " ,
+        "debug": "npx hardhat test ",
         "compile": "hardhat compile",
         "test:e2e": "docker-compose -f  ./docker/docker-compose-e2e.yml up -d  && npx hardhat test test/e2e/**",
         "test": "hardhat test ./test/contracts/**",
@@ -26,6 +26,7 @@
     "author": "Alex Plutta alex.plutta@googlemail.com",
     "license": "MIT",
     "devDependencies": {
+        "@ensdomains/address-encoder": "^0.2.21",
         "@nomiclabs/hardhat-ethers": "^2.0.3",
         "@nomiclabs/hardhat-etherscan": "^3.1.7",
         "@nomiclabs/hardhat-solhint": "^2.0.0",

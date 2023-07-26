@@ -4,9 +4,11 @@ import { ethers } from "hardhat";
 import { L2PublicResolver } from "typechain";
 
 import { expect } from "chai";
-import { dnsEncode, keccak256, toUtf8Bytes } from "ethers/lib/utils";
-import { dnsWireFormat } from "../helper/encodednsWireFormat";
 import { BigNumber } from "ethers";
+import { arrayify, dnsEncode, keccak256, toUtf8Bytes } from "ethers/lib/utils";
+import { dnsWireFormat } from "../helper/encodednsWireFormat";
+
+import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder'
 
 describe("L2PublicResolver", () => {
     let user1: SignerWithAddress;
@@ -25,7 +27,6 @@ describe("L2PublicResolver", () => {
             const name = "dm3.eth";
             const node = ethers.utils.namehash("dm3.eth");
             // record should initially be empty
-            console.log("addr", user1.address);
             expect(BigNumber.from(await l2PublicResolver.recordVersions(user1.address, node)).toNumber()).to.equal(0);
 
             const tx = await l2PublicResolver.connect(user1).clearRecords(dnsEncode(name));
@@ -101,6 +102,39 @@ describe("L2PublicResolver", () => {
             // record of the owned node should be changed
             expect(await l2PublicResolver["addr(bytes,bytes32)"](user1.address, node)).to.equal(user2.address);
         });
+        it("set blockchain address record on L2", async () => {
+            const name = "btc.dm3.eth";
+            const node = ethers.utils.namehash(name);
+
+            const btcAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+            const btcCoinType = 0
+            //See https://github.com/ensdomains/ensjs-v3/blob/c93759f1197e63ca98006f6ef8edada5c4a332f7/packages/ensjs/src/utils/recordHelpers.ts#L43
+            const cointypeInstance = formatsByCoinType[btcCoinType]
+            const decodedBtcAddress = cointypeInstance.decoder(btcAddress);
+
+
+            // record should initially be empty
+            expect(await l2PublicResolver["addr(bytes,bytes32)"](user1.address, node)).to.equal(
+                "0x0000000000000000000000000000000000000000"
+            );
+            const tx = await l2PublicResolver["setAddr(bytes,uint256,bytes)"](dnsEncode(name), btcCoinType, decodedBtcAddress);
+            const receipt = await tx.wait();
+            const [addressChangedEvent, addrChangedEvent] = receipt.events;
+
+            let [eventContext, eventName, eventNode, eventCoinType, eventAddress] = addressChangedEvent.args;
+
+            expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
+            expect(eventNode).to.equal(node);
+            expect(eventName).to.equal(dnsEncode(name));
+            expect(eventCoinType.toNumber()).to.equal(0);
+
+            const result = await l2PublicResolver["addr(bytes,bytes32,uint256)"](user1.address, node, btcCoinType);
+
+            const encodedBtcAddress = cointypeInstance.encoder(Buffer.from(result.slice(2), "hex"));
+
+            expect(encodedBtcAddress).to.equal(btcAddress);
+
+        })
     });
     describe("ABIResolver", () => {
         it("set abi record on L2", async () => {
@@ -206,33 +240,6 @@ describe("L2PublicResolver", () => {
             const actualName = await l2PublicResolver.name(user1.address, node);
 
             expect(actualName).to.equal("foo");
-        });
-    });
-    describe("PubKey", () => {
-        it("set pubKey on L2", async () => {
-            const name = "dm3.eth";
-            const node = ethers.utils.namehash(name);
-
-            const x = ethers.utils.formatBytes32String("foo");
-            const y = ethers.utils.formatBytes32String("bar");
-
-            const tx = await l2PublicResolver.connect(user1).setPubkey(dnsEncode(name), x, y);
-
-            const receipt = await tx.wait();
-            const [pubKeyChangedChangedEvent] = receipt.events;
-
-            const [eventContext, eventName, eventNode, eventX, eventY] = pubKeyChangedChangedEvent.args;
-
-            expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
-            expect(eventNode).to.equal(node);
-            expect(eventName).to.equal(dnsEncode(name));
-            expect(eventX).to.eql(x);
-            expect(eventY).to.eql(y);
-
-            const { x: actualX, y: actualY } = await l2PublicResolver.pubkey(user1.address, node);
-
-            expect(actualX).to.equal(x);
-            expect(actualY).to.equal(y);
         });
     });
 });
