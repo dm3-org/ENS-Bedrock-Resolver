@@ -8,7 +8,7 @@ import { BigNumber } from "ethers";
 import { dnsEncode, keccak256, toUtf8Bytes } from "ethers/lib/utils";
 import { dnsWireFormat } from "../helper/encodednsWireFormat";
 
-import { formatsByCoinType } from '@ensdomains/address-encoder';
+import { formatsByCoinType } from "@ensdomains/address-encoder";
 
 describe("L2PublicResolver", () => {
     let user1: SignerWithAddress;
@@ -106,12 +106,11 @@ describe("L2PublicResolver", () => {
             const name = "btc.dm3.eth";
             const node = ethers.utils.namehash(name);
 
-            const btcAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
-            const btcCoinType = 0
+            const btcAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
+            const btcCoinType = 0;
             //See https://github.com/ensdomains/ensjs-v3/blob/c93759f1197e63ca98006f6ef8edada5c4a332f7/packages/ensjs/src/utils/recordHelpers.ts#L43
-            const cointypeInstance = formatsByCoinType[btcCoinType]
+            const cointypeInstance = formatsByCoinType[btcCoinType];
             const decodedBtcAddress = cointypeInstance.decoder(btcAddress);
-
 
             // record should initially be empty
             expect(await l2PublicResolver["addr(bytes,bytes32)"](user1.address, node)).to.equal(
@@ -134,8 +133,7 @@ describe("L2PublicResolver", () => {
             const encodedBtcAddress = cointypeInstance.encoder(Buffer.from(result.slice(2), "hex"));
 
             expect(encodedBtcAddress).to.equal(btcAddress);
-
-        })
+        });
     });
     describe("ABIResolver", () => {
         it("set abi record on L2", async () => {

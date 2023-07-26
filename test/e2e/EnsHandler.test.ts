@@ -7,7 +7,7 @@ import request from "supertest";
 import { L2PublicResolver } from "typechain";
 import { EnsBedrockHandler } from "../../server/http/EnsBedrockHandler";
 import { getResolverInterface } from "../../server/utils/getResolverInterface";
-import { formatsByCoinType } from '@ensdomains/address-encoder';
+import { formatsByCoinType } from "@ensdomains/address-encoder";
 
 describe("EnsHandler", () => {
     let l2PublicResolver: L2PublicResolver;
@@ -31,7 +31,7 @@ describe("EnsHandler", () => {
 
             await l2PublicResolver.connect(alice)["setAddr(bytes,address)"](dnsName, alice.address);
 
-            const ccipRequest = getCcipRequest("addr(bytes32 node)", name, alice.address, node,);
+            const ccipRequest = getCcipRequest("addr(bytes32 node)", name, alice.address, node);
 
             const res = await request(expressApp).get(`/${ethers.constants.AddressZero}/${ccipRequest}`).send();
             const { slot, target } = res.body;
@@ -39,7 +39,6 @@ describe("EnsHandler", () => {
             const slotValue = await ethers.provider.getStorageAt(target, slot);
             expect(ethers.utils.getAddress(slotValue.substring(0, 42))).to.eq(alice.address);
         });
-
     });
     describe("Name", () => {
         it("resolves name", async () => {
@@ -48,7 +47,7 @@ describe("EnsHandler", () => {
             const node = ethers.utils.namehash(name);
 
             await l2PublicResolver.connect(alice).setName(dnsName, "alice");
-            const ccipRequest = getCcipRequest("name", name, alice.address, alice.address, node);
+            const ccipRequest = getCcipRequest("name", name, alice.address, node);
 
             const res = await request(expressApp).get(`/${ethers.constants.AddressZero}/${ccipRequest}`).send();
             const { slot, target } = res.body;

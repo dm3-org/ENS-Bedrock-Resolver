@@ -15,7 +15,7 @@ import {
     L2PublicResolver__factory,
 } from "../../typechain";
 import { dnsWireFormat } from "../helper/encodednsWireFormat";
-import { formatsByCoinType } from '@ensdomains/address-encoder';
+import { formatsByCoinType } from "@ensdomains/address-encoder";
 
 /**
  * This script is used to setup the environment for the e2e tests.
@@ -158,9 +158,9 @@ const setupBedrockTestEnvironment = async () => {
         const recordName = "foo";
         const value = "bar";
         await l2PublicResolver.connect(alice.connect(l2Provider)).setText(name, recordName, value),
-        {
-            gasLimit: 1000000,
-        };
+            {
+                gasLimit: 1000000,
+            };
     };
 
     //Prepare test 31 byte
@@ -203,14 +203,16 @@ const setupBedrockTestEnvironment = async () => {
     const prepareSetblockchainAddr = async () => {
         const name = dnsEncode("alice.eth");
 
-        const btcAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
-        const btcCoinType = 0
+        const btcAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
+        const btcCoinType = 0;
         //See https://github.com/ensdomains/ensjs-v3/blob/c93759f1197e63ca98006f6ef8edada5c4a332f7/packages/ensjs/src/utils/recordHelpers.ts#L43
-        const cointypeInstance = formatsByCoinType[btcCoinType]
+        const cointypeInstance = formatsByCoinType[btcCoinType];
         const decodedBtcAddress = cointypeInstance.decoder(btcAddress);
-        const tx = await l2PublicResolver.connect(alice.connect(l2Provider))["setAddr(bytes,uint256,bytes)"](name, btcCoinType, decodedBtcAddress, {
-            gasLimit: 1000000,
-        });
+        const tx = await l2PublicResolver
+            .connect(alice.connect(l2Provider))
+            ["setAddr(bytes,uint256,bytes)"](name, btcCoinType, decodedBtcAddress, {
+                gasLimit: 1000000,
+            });
         await tx.wait();
     };
     const prepareSetAbi = async () => {
