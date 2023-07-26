@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.17;
 
 import {ResolverBase} from "../ResolverBase.sol";
 import {RRUtils, BytesUtils} from "@ensdomains/ens-contracts/contracts/dnssec-oracle/RRUtils.sol";

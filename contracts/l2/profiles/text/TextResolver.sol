@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.17;
 
 import {ResolverBase, BytesUtils} from "../ResolverBase.sol";
 import {ITextResolver} from "./ITextResolver.sol";
