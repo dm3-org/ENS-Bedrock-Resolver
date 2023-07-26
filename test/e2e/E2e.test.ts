@@ -47,7 +47,6 @@ describe("E2E Test", () => {
             };
 
             const text = await resolver.getText("network.dm3.eth");
-
             expect(text).to.eql(JSON.stringify(profile));
         });
         it("ccip gateway resolves sort text ethers.provider.getText()", async () => {
@@ -57,10 +56,16 @@ describe("E2E Test", () => {
 
             expect(text).to.eql("bar");
         });
-        it("ccip gateway resolves existing profile using ethers.provider.getAddress()", async () => {
+        it("ccip gateway resolves existing address using ethers.provider.getAddress()", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
             const addr = await resolver.getAddress();
             expect(addr).to.equal(alice.address);
+        });
+        it("ccip gateway resolves existing blockchain address using ethers.provider.getAddress()", async () => {
+            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
+            const addr = await resolver.getAddress(0);
+
+            expect(addr).to.equal("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa");
         });
         it("ccip gateway resolves existing contenthash ethers.provider.getContenthash", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
@@ -93,41 +98,38 @@ describe("E2E Test", () => {
 
         it("ccip gateway resolves existing name ", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "namewrapper.alice.eth");
-            const l2PublicResolverFactory = await hreEthers.getContractFactory("L2PublicResolver");
 
-            const sig = l2PublicResolverFactory.interface.encodeFunctionData("name", [alice.address, ethers.utils.namehash("alice.eth")]);
+            const iface = new ethers.utils.Interface(["function name(bytes32 node) external view returns (string memory)"]);
+            const sig = iface.encodeFunctionData("name", [ethers.utils.namehash("alice.eth")]);
 
-            const [response] = l2PublicResolverFactory.interface.decodeFunctionResult("name", await resolver._fetch(sig));
+            const [response] = iface.decodeFunctionResult("name", await resolver._fetch(sig));
 
             expect(response).to.equal("alice");
         });
         it("ccip gateway resolves dnsRecord ", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "namewrapper.alice.eth");
-            const l2PublicResolverFactory = await hreEthers.getContractFactory("L2PublicResolver");
+
+            const iface = new ethers.utils.Interface([
+                "function dnsRecord(bytes32 node,bytes32 name,uint16 resource) public view  returns(bytes memory)",
+            ]);
 
             const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
-
-            const sig = l2PublicResolverFactory.interface.encodeFunctionData("dnsRecord", [
-                alice.address,
+            const sig = iface.encodeFunctionData("dnsRecord", [
                 ethers.utils.namehash("alice.eth"),
                 keccak256("0x" + record.substring(0, 30)),
                 1,
             ]);
 
-            const [response] = l2PublicResolverFactory.interface.decodeFunctionResult("dnsRecord", await resolver._fetch(sig));
+            const [response] = iface.decodeFunctionResult("dnsRecord", await resolver._fetch(sig));
             expect(response).to.equal("0x0161076578616d706c6503636f6d000001000100000e10000401020304");
         });
         it("ccip gateway resolves zonehash", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "namewrapper.alice.eth");
-            const l2PublicResolverFactory = await hreEthers.getContractFactory("L2PublicResolver");
+            const iface = new ethers.utils.Interface(["function zonehash(bytes32 node) external view  returns (bytes memory)"]);
 
-            const sig = l2PublicResolverFactory.interface.encodeFunctionData("zonehash", [
-                alice.address,
-                ethers.utils.namehash("alice.eth"),
-            ]);
+            const sig = iface.encodeFunctionData("zonehash", [ethers.utils.namehash("alice.eth")]);
 
-            const [response] = l2PublicResolverFactory.interface.decodeFunctionResult("zonehash", await resolver._fetch(sig));
-            // await require("hardhat").storageLayout.export()
+            const [response] = iface.decodeFunctionResult("zonehash", await resolver._fetch(sig));
             expect(response).to.equal(keccak256(toUtf8Bytes("foo")));
         });
 

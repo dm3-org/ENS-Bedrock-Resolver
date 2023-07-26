@@ -15,6 +15,7 @@ import {
     L2PublicResolver__factory,
 } from "../../typechain";
 import { dnsWireFormat } from "../helper/encodednsWireFormat";
+import { formatsByCoinType } from "@ensdomains/address-encoder";
 
 /**
  * This script is used to setup the environment for the e2e tests.
@@ -199,6 +200,21 @@ const setupBedrockTestEnvironment = async () => {
             gasLimit: 1000000,
         });
     };
+    const prepareSetblockchainAddr = async () => {
+        const name = dnsEncode("alice.eth");
+
+        const btcAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
+        const btcCoinType = 0;
+        //See https://github.com/ensdomains/ensjs-v3/blob/c93759f1197e63ca98006f6ef8edada5c4a332f7/packages/ensjs/src/utils/recordHelpers.ts#L43
+        const cointypeInstance = formatsByCoinType[btcCoinType];
+        const decodedBtcAddress = cointypeInstance.decoder(btcAddress);
+        const tx = await l2PublicResolver
+            .connect(alice.connect(l2Provider))
+            ["setAddr(bytes,uint256,bytes)"](name, btcCoinType, decodedBtcAddress, {
+                gasLimit: 1000000,
+            });
+        await tx.wait();
+    };
     const prepareSetAbi = async () => {
         const name = dnsEncode("alice.eth");
         const abi = bedrockProofVerifier.interface.format(ethers.utils.FormatTypes.json);
@@ -226,15 +242,7 @@ const setupBedrockTestEnvironment = async () => {
             gasLimit: 1000000,
         });
     };
-    const prepareSetPubkey = async () => {
-        const name = dnsEncode("alice.eth");
 
-        const x = ethers.utils.formatBytes32String("foo");
-        const y = ethers.utils.formatBytes32String("bar");
-
-        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setPubkey(name, x, y);
-        const rec = await tx.wait();
-    };
     const prepareSetDNS = async () => {
         const node = ethers.utils.namehash("alice.eth");
 
@@ -293,10 +301,10 @@ const setupBedrockTestEnvironment = async () => {
     await prepareTest31yte();
     await prepeTestMultipleSlots();
     await prepareSetAddr();
+    await prepareSetblockchainAddr();
     await prepareSetAbi();
     await prepareSetContentHash();
     await prepareSetName();
-    await prepareSetPubkey();
     await prepareSetDNS();
     await prepareSetZonehash();
     await prepareTestSubdomain();

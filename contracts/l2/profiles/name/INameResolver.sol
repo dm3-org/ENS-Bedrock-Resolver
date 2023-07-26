@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.17;
 
 interface INameResolver {
     event NameChanged(bytes context, bytes nodeName, bytes32 indexed node, string name);
