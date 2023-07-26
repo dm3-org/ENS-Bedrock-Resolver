@@ -82,7 +82,7 @@ describe("EnsHandler", () => {
 
             await l2PublicResolver.connect(alice).setABI(dnsName, 1, ethers.utils.toUtf8Bytes("0xabc"));
 
-            const ccipRequest = getCcipRequest("ABI", name,  alice.address, node, "1");
+            const ccipRequest = getCcipRequest("ABI", name, alice.address, node, "1");
 
             const res = await request(expressApp).get(`/${ethers.constants.AddressZero}/${ccipRequest}`).send();
             const { slot, target } = res.body;

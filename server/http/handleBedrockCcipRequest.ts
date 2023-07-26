@@ -68,14 +68,11 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                     const { node, contentTypes } = decodeAbi(context, args);
                     const [contentType, Abi] = await l2PubicResolver.ABI(context, node, contentTypes)
                     const slot = await getSlotForAbi(l2PubicResolver, context, node, contentType.toNumber());
-
-                    console.log("ABI", Abi)
-
-                    const res = {
+                    return {
                         slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
                         result: ethers.utils.defaultAbiCoder.encode(["bytes"], [Abi])
                     }
-                    return res
+
                 }
             case "contenthash(bytes32)":
                 {

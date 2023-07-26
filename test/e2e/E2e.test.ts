@@ -4,7 +4,7 @@ import {
     BedrockProofVerifier,
     BedrockProofVerifier__factory,
     CcipResolver,
-    CcipResolver__factory
+    CcipResolver__factory,
 } from "ccip-resolver-js/dist/typechain";
 import { BigNumber, ethers } from "ethers";
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
@@ -17,7 +17,7 @@ describe("E2E Test", () => {
         name: "optimismGoerli",
         chainId: 900,
     });
-    const l2provider = new ethers.providers.StaticJsonRpcProvider("http://localhost:9545")
+    const l2provider = new ethers.providers.StaticJsonRpcProvider("http://localhost:9545");
     //Ccip Resolver
     let ccipResolver: CcipResolver;
     //Bedrock Proof Verifier
@@ -35,11 +35,9 @@ describe("E2E Test", () => {
             .connect(provider);
         bedrockCcipVerifier = new BedrockCcipVerifier__factory().attach("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9");
         ccipResolver = new CcipResolver__factory().attach("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");
-
     });
     describe("resolve", () => {
         it("ccip gateway resolves existing profile using ethers.provider.getText()", async () => {
-
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
 
             const profile = {
@@ -78,36 +76,28 @@ describe("E2E Test", () => {
                 "function ABI(bytes32 node, uint256 contextType) external view returns (uint256, bytes memory)",
             ]);
 
-            const sig = iface.encodeFunctionData("ABI",
-                [ethers.utils.namehash("alice.eth"), 1]
-            )
+            const sig = iface.encodeFunctionData("ABI", [ethers.utils.namehash("alice.eth"), 1]);
 
             const encodedRes = await resolver._fetch(sig);
 
-            const [decodedRes] = ethers.utils.defaultAbiCoder.decode(["bytes"], encodedRes)
-
+            const [decodedRes] = ethers.utils.defaultAbiCoder.decode(["bytes"], encodedRes);
 
             const ress = iface.decodeFunctionResult("ABI", decodedRes);
-     
-            const [actualContextType, actualAbi] = ress
-            const expectedAbi = new BedrockProofVerifier__factory().interface.format(ethers.utils.FormatTypes.json)
 
-            expect(BigNumber.from(actualContextType).toNumber()).to.equal(1)
+            const [actualContextType, actualAbi] = ress;
+            const expectedAbi = new BedrockProofVerifier__factory().interface.format(ethers.utils.FormatTypes.json);
+
+            expect(BigNumber.from(actualContextType).toNumber()).to.equal(1);
             expect(Buffer.from(actualAbi.slice(2), "hex").toString()).to.equal(expectedAbi);
         });
-
-
 
         it("ccip gateway resolves existing name ", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "namewrapper.alice.eth");
             const l2PublicResolverFactory = await hreEthers.getContractFactory("L2PublicResolver");
 
-            const sig = l2PublicResolverFactory.interface.encodeFunctionData("name",
-                [alice.address, ethers.utils.namehash("alice.eth")]
-            )
+            const sig = l2PublicResolverFactory.interface.encodeFunctionData("name", [alice.address, ethers.utils.namehash("alice.eth")]);
 
             const [response] = l2PublicResolverFactory.interface.decodeFunctionResult("name", await resolver._fetch(sig));
-
 
             expect(response).to.equal("alice");
         });
@@ -115,32 +105,31 @@ describe("E2E Test", () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "namewrapper.alice.eth");
             const l2PublicResolverFactory = await hreEthers.getContractFactory("L2PublicResolver");
 
-            const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4")
+            const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
 
-            const sig = l2PublicResolverFactory.interface.encodeFunctionData("dnsRecord",
-                [alice.address, ethers.utils.namehash("alice.eth"), keccak256("0x" + record.substring(0, 30)),
-                    1]
-            )
+            const sig = l2PublicResolverFactory.interface.encodeFunctionData("dnsRecord", [
+                alice.address,
+                ethers.utils.namehash("alice.eth"),
+                keccak256("0x" + record.substring(0, 30)),
+                1,
+            ]);
 
             const [response] = l2PublicResolverFactory.interface.decodeFunctionResult("dnsRecord", await resolver._fetch(sig));
-            expect(response).to.equal("0x0161076578616d706c6503636f6d000001000100000e10000401020304")
-
+            expect(response).to.equal("0x0161076578616d706c6503636f6d000001000100000e10000401020304");
         });
         it("ccip gateway resolves zonehash", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "namewrapper.alice.eth");
             const l2PublicResolverFactory = await hreEthers.getContractFactory("L2PublicResolver");
 
-
-            const sig = l2PublicResolverFactory.interface.encodeFunctionData("zonehash",
-                [alice.address, ethers.utils.namehash("alice.eth"),]
-            )
+            const sig = l2PublicResolverFactory.interface.encodeFunctionData("zonehash", [
+                alice.address,
+                ethers.utils.namehash("alice.eth"),
+            ]);
 
             const [response] = l2PublicResolverFactory.interface.decodeFunctionResult("zonehash", await resolver._fetch(sig));
             // await require("hardhat").storageLayout.export()
-            expect(response).to.equal(keccak256(toUtf8Bytes("foo")))
-
+            expect(response).to.equal(keccak256(toUtf8Bytes("foo")));
         });
-
 
         it("Returns empty string if record is empty", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");

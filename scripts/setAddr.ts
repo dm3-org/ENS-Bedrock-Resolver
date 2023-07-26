@@ -11,7 +11,6 @@ export async function setAddr() {
 
     const L2PublicResolver = L2PublicResolverFactory.attach(l2ResolverAddress);
 
-
     const tx = await L2PublicResolver["setAddr(bytes,address)"](dnsEncode(ENS_NAME), signer.address);
     const rec = await tx.wait();
 

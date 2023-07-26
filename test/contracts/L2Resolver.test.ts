@@ -39,7 +39,7 @@ describe("L2PublicResolver", () => {
 
             expect(eventName).to.equal(dnsEncode(name));
             expect(eventNode).to.equal(node);
-            expect((recordVersion).toNumber()).to.equal(1);
+            expect(recordVersion.toNumber()).to.equal(1);
 
             // record of the owned node should be changed
             expect((await l2PublicResolver.recordVersions(user1.address, node)).toNumber()).to.equal(1);
@@ -89,7 +89,7 @@ describe("L2PublicResolver", () => {
             expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
             expect(eventNode).to.equal(node);
             expect(eventName).to.equal(dnsEncode(name));
-            expect((eventCoinType).toNumber()).to.equal(60);
+            expect(eventCoinType.toNumber()).to.equal(60);
             expect(ethers.utils.getAddress(eventAddress)).to.equal(user2.address);
 
             [eventContext, eventName, eventNode, eventAddress] = addrChangedEvent.args;
@@ -118,11 +118,11 @@ describe("L2PublicResolver", () => {
             expect(ethers.utils.getAddress(context)).to.equal(user1.address);
             expect(eventName).to.equal(dnsEncode(name));
             expect(eventNode).to.equal(node);
-            expect((eventContentType).toNumber()).to.equal(1);
+            expect(eventContentType.toNumber()).to.equal(1);
 
             const [actualContentType, actualAbi] = await l2PublicResolver.ABI(user1.address, node, 1);
 
-            expect((actualContentType).toNumber()).to.equal(1);
+            expect(actualContentType.toNumber()).to.equal(1);
             expect(Buffer.from(actualAbi.slice(2), "hex").toString()).to.equal(abi.toString());
         });
     });
