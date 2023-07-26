@@ -1,5 +1,6 @@
 import { getResolverInterface } from "../utils/getResolverInterface";
 
+import { ethers } from "ethers";
 import { L2PublicResolver } from "../../typechain";
 import { StorageLayout } from "../profiles/StorageLayout";
 import { decodeAbi } from "../profiles/abi/decodeAbi";
@@ -10,14 +11,10 @@ import { decodeContentHash } from "../profiles/contentHash/decodeContentHash";
 import { getSlotForContentHash } from "../profiles/contentHash/getSlotForContentHash";
 import { decodeDNSRecord } from "../profiles/dns/dnsRecord/decodeDnsRecord";
 import { getSlotForDnsRecord } from "../profiles/dns/dnsRecord/getSlotForDnsRecord";
-import { decodeHasDNSRecords } from "../profiles/dns/hasDnsRecord/decodeHasDnsRecords";
-import { getSlotForHasDnsRecords } from "../profiles/dns/hasDnsRecord/getSlotForHasDnsRecord";
 import { decodeZonehash } from "../profiles/dns/zonehash/decodeZonehash";
 import { getSlotForZoneHash } from "../profiles/dns/zonehash/getSlotForZonehash";
 import { decodeName } from "../profiles/name/decodeName";
 import { getSlotForName } from "../profiles/name/getSlotForName";
-import { decodePubkey } from "../profiles/pubkey/decodePubKey";
-import { getSlotForPubkeyX } from "../profiles/pubkey/getStorageSlotForPubkey";
 import { decodeText } from "../profiles/text/decodeText";
 import { getSlotForText } from "../profiles/text/getSlotForText";
 
@@ -66,16 +63,16 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                         result
                     }
                 }
-            case "ABI(bytes,bytes32,uint256)":
+            case "ABI(bytes32,uint256)":
                 {
                     const { node, contentTypes } = decodeAbi(context, args);
-                    const slot = await getSlotForAbi(l2PubicResolver, context, node, contentTypes);
-                    const result = await l2PubicResolver.ABI(context, node, contentTypes)
- 
+                    const [contentType, Abi] = await l2PubicResolver.ABI(context, node, contentTypes)
+                    const slot = await getSlotForAbi(l2PubicResolver, context, node, contentType.toNumber());
                     return {
                         slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
-                        result: l2Resolverinterface.encodeFunctionResult("ABI(bytes,bytes32,uint256)", [contentTypes, result])
+                        result: ethers.utils.defaultAbiCoder.encode(["bytes"], [Abi])
                     }
+
                 }
             case "contenthash(bytes32)":
                 {

@@ -74,7 +74,7 @@ describe("EnsHandler", () => {
             expect(ethers.utils.toUtf8String(slotValue.substring(0, 32))).to.equal("my-record-value");
         });
     });
-    describe.skip("Abi", () => {
+    describe("Abi", () => {
         it("resolves abi", async () => {
             const name = ethers.utils.dnsEncode("alice.eth");
             const dnsName = ethers.utils.dnsEncode(name);
@@ -82,7 +82,7 @@ describe("EnsHandler", () => {
 
             await l2PublicResolver.connect(alice).setABI(dnsName, 1, ethers.utils.toUtf8Bytes("0xabc"));
 
-            const ccipRequest = getCcipRequest("ABI", name, alice.address, alice.address, node, "1");
+            const ccipRequest = getCcipRequest("ABI", name, alice.address, node, "1");
 
             const res = await request(expressApp).get(`/${ethers.constants.AddressZero}/${ccipRequest}`).send();
             const { slot, target } = res.body;

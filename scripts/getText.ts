@@ -6,7 +6,7 @@ export const getText = async () => {
 
     console.log("start getTEXT");
     const text = await resolver.getText("my-record");
-    
+
     console.log(text);
 };
 

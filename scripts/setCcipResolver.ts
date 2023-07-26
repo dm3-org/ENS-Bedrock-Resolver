@@ -21,7 +21,6 @@ export const setCcipResolver = async () => {
     console.log("Transaction hash: ", tx.hash);
     const rec = await tx.wait();
     console.log(`CCIP resolver for domain ${ENS_NAME} set to ${CCIP_RESOLVER_ADDRESS} `);
-
 };
 
 setCcipResolver();
