@@ -6,7 +6,7 @@ import {ResolverBase, BytesUtils} from "../ResolverBase.sol";
 
 abstract contract ABIResolver is IABIResolver, ResolverBase {
     using BytesUtils for bytes;
-    mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(uint256 => bytes)))) versionable_abis;
+    mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(uint256 => bytes)))) abi_with_context;
 
     /**
      * @dev Sets an ABI (Application Binary Interface) record for a given name, associated with a specific content type.
@@ -18,7 +18,7 @@ abstract contract ABIResolver is IABIResolver, ResolverBase {
      *
      * The function then computes the node hash for the provided `name` using the `namehash` function.
      * It encodes the caller's address as `context` using the `abi.encodePacked` function.
-     * The function sets the `data` for the specified `contentType` in the `versionable_abis` mapping,
+     * The function sets the `data` for the specified `contentType` in the `abi_with_context` mapping,
      * using the version number associated with the caller's `context` and node.
      *
      * The function also emits an `ABIChanged` event to notify listeners about the change in the ABI record.
@@ -28,7 +28,7 @@ abstract contract ABIResolver is IABIResolver, ResolverBase {
         require(((contentType - 1) & contentType) == 0);
         bytes32 node = name.namehash(0);
         bytes memory context = abi.encodePacked(msg.sender);
-        versionable_abis[recordVersions[context][node]][context][node][contentType] = data;
+        abi_with_context[recordVersions[context][node]][context][node][contentType] = data;
         emit ABIChanged(context, name, node, contentType);
     }
 
@@ -45,7 +45,7 @@ abstract contract ABIResolver is IABIResolver, ResolverBase {
      * record is being retrieved.
      * The `contentTypes` parameter is a bitmask representing the content types to check in the ABI records.
      *
-     * The function first retrieves the mapping `abiset` from the `versionable_abis` storage using the version number
+     * The function first retrieves the mapping `abiset` from the `abi_with_context` storage using the version number
      * associated with the caller's `context` and node. The `abiset` mapping contains the ABI data for different
      * content types.
      *
@@ -63,7 +63,7 @@ abstract contract ABIResolver is IABIResolver, ResolverBase {
         bytes32 node,
         uint256 contentTypes
     ) external view virtual override returns (uint256, bytes memory) {
-        mapping(uint256 => bytes) storage abiset = versionable_abis[recordVersions[context][node]][context][node];
+        mapping(uint256 => bytes) storage abiset = abi_with_context[recordVersions[context][node]][context][node];
 
         for (uint256 contentType = 1; contentType <= contentTypes; contentType <<= 1) {
             if ((contentType & contentTypes) != 0 && abiset[contentType].length > 0) {
