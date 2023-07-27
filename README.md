@@ -1,21 +1,64 @@
 # ENS-Bedrock-Resolver
 
-This is an App specific handler to store ENS records on Optimism. It uses a forked version of the ENS Public Resolver and a server acting as a gateway.
+This repository contains an app specific handler allowing to store ENS records on Optimism.
+This repository contains contract that have to be deployed on Optimism and Ethereum aswell as a Gateway to resolve CCIP request.
+Everything is configured already so in order to set it up you just have to follow the config Setup section
 
 # L2PubicResolver
-TBD explain 
 
-the following profiles are supported 
+The L2PublicResolver is a Smart Contract derived from the ENS PublicResolver implementation. The functionality for setting records remains consistent with the original implementation. However, when retrieving a record, the caller is required to provide context, specifically the address of the record as per the ENS registry.
 
-* text
-* address
-* contenthash
-* name
-* dnsRecord
-* ZoneHash
+This feature empowers record owners to securely set their records without needing direct access to the ENS Registry contract deployed on the Ethereum mainnet. By incorporating this mechanism, record owners can confidently manage their records in a trustless manner on Layer 2 solutions.
 
+## Context
 
-# Setup
+The L2PublicResolver introduces a novel approach to record management by utilizing an arbitrary bytes string called "context" to define the namespace to which a record belongs. Specifically, in the context of the L2PublicResolver, this "context" refers to the address of the entity that has set a particular record.
+
+This allows for a more flexible and secure record-setting process, enabling record owners to establish records within their respective namespaces without direct access to the ENS Registry contract on the Ethereum mainnet. By associating records with specific addresses, users can confidently manage their records in a trustless manner on Layer 2 solutions.
+
+### Set record
+
+The following example shows how a record can be set. Note that the contract will store both records regardless of them being dedicated to the same domain address and key.
+
+This behavior varies from the original PublicResolver implementation, which would revert if msg.sender is not the owner.
+
+```solidity
+address owner = 0x1;
+address rando = 0x2
+
+//Called by 0x1
+L2Publicresolver.setText("alice.eth","my-key","foo");
+
+//Called by 0x2
+L2Publicresolver.setText("alice.eth","my-key","bar");
+
+```
+
+### Read record
+
+When retrieving the record from L2, the context field includes the owner's address according to the ENS registry. This makes it possible to get the right value back from the resolver.
+
+```solidity
+bytes memory owner = 0x1;
+
+bytes memory value = L2Publicresolver.text(owner,"alice.eth","my-key","foo");
+
+//value ==foo
+
+```
+
+## Profiles
+
+The L2PublicResolver supports the following profiles
+
+-   text
+-   address
+-   contenthash
+-   name
+-   dnsRecord
+-   zoneHash
+
+# Setup Gateway
 
 ## Install
 
@@ -43,25 +86,26 @@ Make sure you have the necessary `DEPLOYER_PRIVATE_KEY`, `OPTIMISTIC_ETHERSCAN_A
 
 1. Set the CCIP-Resolver contract as your resolver:
 
-    - You can either use the ENS Frontend or the script `setCcipResolver.ts`.
-    - When using the script, replace the `ENS_NAME` constant with your ENS name and run the following command:
+- You can either use the ENS Frontend or the script `setCcipResolver.ts`.
+- When using the script, replace the `ENS_NAME` constant with your ENS name and run the following command:
         ```
         npx hardhat run ./scripts/setCcipResolver.ts --network goerli
         ```
 
 2. Deploy a L2PublicResolverContract
-    - 
-    - Currently, there is no Frontend available to do this directly.
-    - You can use the script `setVerifierForDomain.ts` to perform the transaction.
-    - Adjust the script by specifying the l2 Contract you want to store your data, and then run the following command:
-        ```
-        npx hardhat run ./deploy/L1/01_L2Public_Resolver_Verifier.ts --network goerli
-        ```
+
+This step may be omitted when using an instance already deployed. You can find their address in the deployments section.
+If you decide to deploy a new instance of the L2PublicResolver, you have to deploy a new L2PublicResolverContract as well.
+
+-   Currently, there is no Frontend available to do this directly.
+-   You can use the script `setVerifierForDomain.ts` to perform the transaction.
+-   Adjust the script by specifying the l2 Contract you want to store your data, and then run the following command:
+    `npx hardhat run ./deploy/L1/01_L2Public_Resolver_Verifier.ts --network goerli`
 
 3. Set the BedrockCcipVerifier and the gateway URL for your ENS name:
-    - Currently, there is no Frontend available to do this directly.
-    - You can use the script `setVerifierForDomain.ts` to perform the transaction.
-    - Adjust the script by specifying your ENS name and URL, and then run the following command:
+- Currently, there is no Frontend available to do this directly.
+- You can use the script `setVerifierForDomain.ts` to perform the transaction.
+- Adjust the script by specifying your ENS name and URL, and then run the following command:
         ```
         npx hardhat run ./scripts/setVerifierForDomain.ts --network goerli
         ```
@@ -89,5 +133,3 @@ L2PublicResolverVerifier : 0x67AfD6d796d9212541016A2D10b28CC55021Cade
 ## Optimsim Goerli
 
 L2PublicResolver: 0x39Dc8A3A607970FA9F417D284E958D4cA69296C8
-
-
