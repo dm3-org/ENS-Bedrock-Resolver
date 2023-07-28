@@ -51,12 +51,12 @@ bytes memory value = L2Publicresolver.text(owner,"alice.eth","my-key","foo");
 
 The L2PublicResolver supports the following profiles
 
--   text
 -   address
--   contenthash
+-   text
+-   abi
+-   contentHash
+-   dns
 -   name
--   dnsRecord
--   zoneHash
 
 # Setup Gateway
 
