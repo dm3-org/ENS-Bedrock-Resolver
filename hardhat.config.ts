@@ -58,6 +58,15 @@ module.exports = {
         compilers: [
             {
                 version: "0.8.17",
+                viaIR: true,
+                optimizer: {
+                    enabled: true,
+                    details: {
+                        yulDetails: {
+                            optimizerSteps: "u",
+                        },
+                    },
+                },
             },
         ],
     },

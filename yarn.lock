@@ -2822,10 +2822,10 @@ cbor@^8.1.0:
   dependencies:
     nofilter "^3.1.0"
 
-ccip-resolver@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/ccip-resolver/-/ccip-resolver-0.1.0.tgz#97ee7617dc9fd6b4a4f963dc2989f34ee5e2e446"
-  integrity sha512-3Gc6cwdvGe+J1Qk5gG8BZ3j19cEimXd0uutNlCNjQHbokBQ7L7bFeTs+mI07wMTFFCxvwTywfDBNRlF4Hsq4dg==
+ccip-resolver@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/ccip-resolver/-/ccip-resolver-0.1.2.tgz#013469b2c52beb933628b8df6e96dde81a4d6686"
+  integrity sha512-u8z+juc2gGhfx3BqujQXmE2dl2hVKxTzrub/6ROPUUWwjgO87rLjj2gfe+i/oDB67sHY3W2qmHVxltgIebALKw==
   dependencies:
     "@defi-wonderland/smock" "^2.3.4"
     "@ensdomains/buffer" "0.0.10"
@@ -3754,6 +3754,10 @@ enquirer@^2.3.0, enquirer@^2.3.6:
   integrity sha512-yjNnPr315/FjS4zIsUxYguYUPP2e1NK4d7E7ZOLiyYCcbFBiTMyID+2wvm2w6+pZ/odMA7cRkjhsPbltwBOrLg==
   dependencies:
     ansi-colors "^4.1.1"
+
+"ens-contracts-legacy@git+https://github.com/ensdomains/resolvers.git#v0.1.7":
+  version "0.1.7"
+  resolved "git+https://github.com/ensdomains/resolvers.git#899fee8c85fd60ebe04855f0991da3d796ff6081"
 
 "ens-contracts-legacy@https://github.com/ensdomains/resolvers.git#v0.1.7":
   version "0.1.7"

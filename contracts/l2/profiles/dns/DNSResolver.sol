@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {ResolverBase} from "../ResolverBase.sol";
+import {ResolverBase, BytesUtils as EnsBytesUtils} from "../ResolverBase.sol";
 import {RRUtils, BytesUtils} from "@ensdomains/ens-contracts/contracts/dnssec-oracle/RRUtils.sol";
 import {IDNSRecordResolver} from "./IDNSRecordResolver.sol";
 import {IDNSZoneResolver} from "./IDNSZoneResolver.sol";
@@ -9,21 +9,22 @@ import {IDNSZoneResolver} from "./IDNSZoneResolver.sol";
 abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverBase {
     using RRUtils for *;
     using BytesUtils for bytes;
+    using EnsBytesUtils for bytes;
 
     // Zone hashes for the domains.
     // A zone hash is an EIP-1577 content hash in binary format that should point to a
     // resource containing a single zonefile.
     // node => contenthash
-    mapping(uint64 => mapping(bytes => mapping(bytes32 => bytes))) private versionable_zonehashes;
+    mapping(uint64 => mapping(bytes => mapping(bytes32 => bytes))) private zonehash_with_context;
 
     // The records themselves.  Stored as binary RRSETs
     // node => version => name => resource => data
-    mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(bytes32 => mapping(uint16 => bytes))))) private versionable_records;
+    mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(bytes32 => mapping(uint16 => bytes))))) private records_with_context;
 
     // Count of number of entries for a given name.  Required for DNS resolvers
     // when resolving wildcards.
     // node => version => name => number of records
-    mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(bytes32 => uint16)))) private versionable_nameEntriesCount;
+    mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(bytes32 => uint16)))) private nameEntries_with_context;
 
     /**
      * Set one or more DNS records.  Records are supplied in wire-format.
@@ -41,10 +42,11 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
      * then this would store the first A record, the CNAME, then the second A
      * record which would overwrite the first.
      *
-     * @param node the namehash of the node for which to set the records
+     * @param ensName The DNS encoded domain name.
      * @param data the DNS wire format records to set
      */
-    function setDNSRecords(bytes32 node, bytes calldata data) external virtual {
+    function setDNSRecords(bytes calldata ensName, bytes calldata data) external virtual {
+        bytes32 node = ensName.namehash(0);
         uint16 resource = 0;
         uint256 offset = 0;
         bytes memory name;
@@ -75,7 +77,8 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
             }
         }
         if (name.length > 0) {
-            setDNSRRSet(node, name, resource, data, offset, data.length - offset, value.length == 0, version);
+            uint size = data.length - offset; //Prevent stack to deep error
+            setDNSRRSet(node, name, resource, data, offset, size, value.length == 0, version);
         }
     }
 
@@ -92,7 +95,7 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
         bytes32 name,
         uint16 resource
     ) public view virtual override returns (bytes memory) {
-        return versionable_records[recordVersions[context][node]][context][node][name][resource];
+        return records_with_context[recordVersions[context][node]][context][node][name][resource];
     }
 
     /**
@@ -101,20 +104,21 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
      * @param name the namehash of the node for which to check the records
      */
     function hasDNSRecords(bytes calldata context, bytes32 node, bytes32 name) public view virtual returns (bool) {
-        return (versionable_nameEntriesCount[recordVersions[context][node]][context][node][name] != 0);
+        return (nameEntries_with_context[recordVersions[context][node]][context][node][name] != 0);
     }
 
     /**
      * setZonehash sets the hash for the zone.
      * May only be called by the owner of that node in the ENS registry.
-     * @param node The name to update.
+     * @param name The DNS encoded domain name.
      * @param hash The zonehash to set
      */
-    function setZonehash(bytes32 node, bytes calldata hash) external virtual {
+    function setZonehash(bytes calldata name, bytes calldata hash) external virtual {
+        bytes32 node = name.namehash(0);
         bytes memory context = abi.encodePacked(msg.sender);
         uint64 currentRecordVersion = recordVersions[context][node];
-        bytes memory oldhash = versionable_zonehashes[currentRecordVersion][context][node];
-        versionable_zonehashes[currentRecordVersion][context][node] = hash;
+        bytes memory oldhash = zonehash_with_context[currentRecordVersion][context][node];
+        zonehash_with_context[currentRecordVersion][context][node] = hash;
         emit DNSZonehashChanged(context, node, oldhash, hash);
     }
 
@@ -124,7 +128,7 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
      * @return The associated contenthash.
      */
     function zonehash(bytes calldata context, bytes32 node) external view virtual override returns (bytes memory) {
-        return versionable_zonehashes[recordVersions[context][node]][context][node];
+        return zonehash_with_context[recordVersions[context][node]][context][node];
     }
 
     function supportsInterface(bytes4 interfaceID) public view virtual override returns (bool) {
@@ -149,16 +153,16 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
         bytes memory rrData = data.substring(offset, size);
 
         if (deleteRecord) {
-            if (versionable_records[version][context][node][nameHash][resource].length != 0) {
-                versionable_nameEntriesCount[version][context][node][nameHash]--;
+            if (records_with_context[version][context][node][nameHash][resource].length != 0) {
+                nameEntries_with_context[version][context][node][nameHash]--;
             }
-            delete (versionable_records[version][context][node][nameHash][resource]);
+            delete (records_with_context[version][context][node][nameHash][resource]);
             emit DNSRecordDeleted(context, node, name, resource);
         } else {
-            if (versionable_records[version][context][node][nameHash][resource].length == 0) {
-                versionable_nameEntriesCount[version][context][node][nameHash]++;
+            if (records_with_context[version][context][node][nameHash][resource].length == 0) {
+                nameEntries_with_context[version][context][node][nameHash]++;
             }
-            versionable_records[version][context][node][nameHash][resource] = rrData;
+            records_with_context[version][context][node][nameHash][resource] = rrData;
             emit DNSRecordChanged(context, node, name, resource, rrData);
         }
     }

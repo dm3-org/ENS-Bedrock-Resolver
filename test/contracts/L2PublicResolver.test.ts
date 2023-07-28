@@ -186,7 +186,7 @@ describe("L2PublicResolver", () => {
         it("set DNS record on L2", async () => {
             const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
             const node = ethers.utils.namehash(ethers.utils.nameprep("dm3.eth"));
-            const tx = await l2PublicResolver.connect(user1).setDNSRecords(node, "0x" + record);
+            const tx = await l2PublicResolver.connect(user1).setDNSRecords(dnsEncode("dm3.eth"), "0x" + record);
 
             const receipt = await tx.wait();
             const [dnsRecordChangedEvent] = receipt.events;
@@ -202,7 +202,7 @@ describe("L2PublicResolver", () => {
         it("set zonehash on L2", async () => {
             const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
             const node = ethers.utils.namehash(ethers.utils.nameprep("dm3.eth"));
-            const tx = await l2PublicResolver.connect(user1).setZonehash(node, keccak256(toUtf8Bytes("foo")));
+            const tx = await l2PublicResolver.connect(user1).setZonehash(dnsEncode("dm3.eth"), keccak256(toUtf8Bytes("foo")));
 
             const receipt = await tx.wait();
             const [dnsRecordChangedEvent] = receipt.events;
