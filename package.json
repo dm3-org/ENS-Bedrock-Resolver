@@ -83,7 +83,7 @@
         "@ensdomains/ens-contracts": "^0.0.19",
         "@eth-optimism/contracts": "^0.5.40",
         "@eth-optimism/sdk": "^2.0.2",
-        "ccip-resolver": "0.1.0",
+        "ccip-resolver": "0.1.2",
         "cors": "^2.8.5",
         "ens-contracts-legacy": "https://github.com/ensdomains/resolvers.git#v0.1.7",
         "express": "^4.18.2",
