@@ -2,7 +2,7 @@ import { dnsEncode } from "ethers/lib/utils";
 import hre from "hardhat";
 import { L2PublicResolver__factory } from "typechain";
 
-const l2ResolverAddress = "0x39Dc8A3A607970FA9F417D284E958D4cA69296C8";
+const l2ResolverAddress = "0xc1C2b9dD2D15045D52640e120a2d1F16dA3bBb48";
 const ENS_NAME = "bob123.eth";
 
 export async function createTextRecord() {
@@ -10,7 +10,12 @@ export async function createTextRecord() {
 
     const L2PublicResolver = L2PublicResolverFactory.attach(l2ResolverAddress);
 
-    const tx = await L2PublicResolver.setText(dnsEncode(ENS_NAME), "my-record", "my-record-value");
+    const tx = await L2PublicResolver.setText(dnsEncode(ENS_NAME), "my-record", "my-record-value",
+        {
+            gasPrice: "900000",
+            gasLimit: 500000,
+        }
+    );
 
     const rec = await tx.wait();
 

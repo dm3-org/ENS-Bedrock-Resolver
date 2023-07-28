@@ -5,8 +5,13 @@ async function main() {
 
     console.log(deployer.address)
 
+    console.log("balance ", ethers.utils.formatEther(await deployer.getBalance()))
+
     const L2PublicResolverFactory = await ethers.getContractFactory("L2PublicResolver");
-    const deployTx = await L2PublicResolverFactory.deploy();
+    const deployTx = await L2PublicResolverFactory.deploy({
+        gasLimit: 5000000,
+        gasPrice: "900000"
+    });
 
     await deployTx.deployed();
 
