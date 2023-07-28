@@ -2,7 +2,7 @@ import hre, { ethers } from "hardhat";
 
 const ENS_NAME = "alice123.eth";
 
-const CCIP_RESOLVER_ADDRESS = "0x49e0AeC78ec0dF50852E99116E524a43bE91B789";
+const CCIP_RESOLVER_ADDRESS = "0x491316b83fDb7dC1370b0815775C8d2D2d0b6428";
 const NAME_WRAPPER = "0x114D4603199df73e7D157787f8778E21fCd13066";
 
 export const setCcipResolver = async () => {

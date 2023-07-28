@@ -3,8 +3,8 @@ import hre, { ethers } from "hardhat";
 const ENS_NAME = "alice123.eth";
 const URL = "http://localhost:8081/{sender}/{data}";
 
-const CCIP_RESOLVER = "0x49e0AeC78ec0dF50852E99116E524a43bE91B789";
-const L2_PUBLIC_RESOLVER_VERIFIER = "0x67AfD6d796d9212541016A2D10b28CC55021Cade";
+const CCIP_RESOLVER = "0x491316b83fDb7dC1370b0815775C8d2D2d0b6428";
+const L2_PUBLIC_RESOLVER_VERIFIER = "0x4b0eb86177BffeB62e74b14c89d8817B3762BF14";
 
 export const setVerifierForDomain = async () => {
     const [signer] = await hre.ethers.getSigners();

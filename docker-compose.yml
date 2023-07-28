@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
     ens-data-source:
-        image: dm3org/ens-bedrock-resolver:v0.0.3
+        image: dm3org/ens-bedrock-resolver:v0.1.0
         restart: always
         environment:
             L2_PROVIDER_URL: "$L2_PROVIDER_URL"
@@ -16,7 +16,7 @@ services:
         environment:
             CONFIG: |
                 {
-                  "0x49e0AeC78ec0dF50852E99116E524a43bE91B789": {
+                  "0x491316b83fDb7dC1370b0815775C8d2D2d0b6428": {
                     "type": "optimism-bedrock",
                     "handlerUrl": "http://ens-data-source:8887",
                     "l1ProviderUrl": "$L1_PROVIDER_URL",
