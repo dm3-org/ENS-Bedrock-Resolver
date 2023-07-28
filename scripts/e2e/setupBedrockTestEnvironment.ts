@@ -158,9 +158,9 @@ const setupBedrockTestEnvironment = async () => {
         const recordName = "foo";
         const value = "bar";
         await l2PublicResolver.connect(alice.connect(l2Provider)).setText(name, recordName, value),
-            {
-                gasLimit: 1000000,
-            };
+        {
+            gasLimit: 1000000,
+        };
     };
 
     //Prepare test 31 byte
@@ -210,9 +210,9 @@ const setupBedrockTestEnvironment = async () => {
         const decodedBtcAddress = cointypeInstance.decoder(btcAddress);
         const tx = await l2PublicResolver
             .connect(alice.connect(l2Provider))
-            ["setAddr(bytes,uint256,bytes)"](name, btcCoinType, decodedBtcAddress, {
-                gasLimit: 1000000,
-            });
+        ["setAddr(bytes,uint256,bytes)"](name, btcCoinType, decodedBtcAddress, {
+            gasLimit: 1000000,
+        });
         await tx.wait();
     };
     const prepareSetAbi = async () => {
@@ -244,20 +244,17 @@ const setupBedrockTestEnvironment = async () => {
     };
 
     const prepareSetDNS = async () => {
-        const node = ethers.utils.namehash("alice.eth");
+        const nodeName = dnsEncode("alice.eth");
 
         const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
 
-        await l2PublicResolver.connect(alice.connect(l2Provider)).setDNSRecords(node, "0x" + record, {
+        await l2PublicResolver.connect(alice.connect(l2Provider)).setDNSRecords(nodeName, "0x" + record, {
             gasLimit: 1000000,
         });
     };
     const prepareSetZonehash = async () => {
-        const node = ethers.utils.namehash("alice.eth");
-
-        const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
-
-        await l2PublicResolver.connect(alice.connect(l2Provider)).setZonehash(node, keccak256(toUtf8Bytes("foo")), {
+        const nodeName = dnsEncode("alice.eth");
+        await l2PublicResolver.connect(alice.connect(l2Provider)).setZonehash(nodeName, keccak256(toUtf8Bytes("foo")), {
             gasLimit: 1000000,
         });
     };
