@@ -1,8 +1,8 @@
 # ENS-Bedrock-Resolver
 
 This repository contains an app specific handler allowing to store ENS records on Optimism.
-This repository contains contract that have to be deployed on Optimism and Ethereum aswell as a Gateway to resolve CCIP request.
-Everything is configured already so in order to set it up you just have to follow the config Setup section
+This repository contains contract that have to be deployed on Optimism and Ethereum aswell as a Gateway to resolve CCIP requests.
+Everything is configured already so to set it up you just have to follow the config Setup section
 
 # L2PubicResolver
 
@@ -16,7 +16,7 @@ The L2PublicResolver introduces a novel approach to record management by utilizi
 
 This allows for a more flexible and secure record-setting process, enabling record owners to establish records within their respective namespaces without direct access to the ENS Registry contract on the Ethereum mainnet. By associating records with specific addresses, users can confidently manage their records in a trustless manner on Layer 2 solutions.
 
-### Set record
+### Set record with Context
 
 The following example shows how a record can be set. Note that the contract will store both records regardless of them being dedicated to the same domain address and key.
 
@@ -34,7 +34,7 @@ L2Publicresolver.setText("alice.eth","my-key","bar");
 
 ```
 
-### Read record
+### Read record with Context
 
 When retrieving the record from L2, the context field includes the owner's address according to the ENS registry. This makes it possible to get the right value back from the resolver.
 
@@ -57,6 +57,29 @@ The L2PublicResolver supports the following profiles
 -   contentHash
 -   dns
 -   name
+
+# Architecture
+The following diagrams show all the steps involved in performing a full CCIP lookup.
+
+## Resolve
+
+Resolution according to ENSIP-10 is utilized to retrieve off-chain data. When calling the 'resolve' method, it reverts with an 'OffchainLookup,' which instructs the CCIP-Read Client on how to retrieve the request.
+
+```solidity
+error OffchainLookup(address sender, string[] urls, bytes callData, bytes4 callbackFunction, bytes extraData);
+```
+
+![resolve](./Resolve-diagramm.png)
+
+1.1 Resolves the gateway URL from the OffchainLookup error. That URL contains the calldata and the contract address of the resolver
+
+1.2 The 'resolve' function extracts the gateway URL from the OffchainLookup error. This URL contains the calldata and the contract address of the resolver
+
+1.3 The process retrieves from the App-specific handler the slot that the proof should be created from. This step is separated to allow for an App-specific handler for any contract, not limited to the L2PublicResolver.
+
+1.4 The process fetches the requested data from Optimism and computes a Merkle Proof. This proof will later be used within 'resolveWithProof' to demonstrate that the data is indeed part of the Optimism state.
+
+1.5 It returns the encoded result along with its proof.
 
 # Setup Gateway
 
@@ -86,11 +109,9 @@ Make sure you have the necessary `DEPLOYER_PRIVATE_KEY`, `OPTIMISTIC_ETHERSCAN_A
 
 1. Set the CCIP-Resolver contract as your resolver:
 
-- You can either use the ENS Frontend or the script `setCcipResolver.ts`.
-- When using the script, replace the `ENS_NAME` constant with your ENS name and run the following command:
-        ```
-        npx hardhat run ./scripts/setCcipResolver.ts --network goerli
-        ```
+-   You can either use the ENS Frontend or the script `setCcipResolver.ts`.
+-   When using the script, replace the `ENS_NAME` constant with your ENS name and run the following command:
+    `    npx hardhat run ./scripts/setCcipResolver.ts --network goerli`
 
 2. Deploy a L2PublicResolverContract
 
@@ -103,12 +124,11 @@ If you decide to deploy a new instance of the L2PublicResolver, you have to depl
     `npx hardhat run ./deploy/L1/01_L2Public_Resolver_Verifier.ts --network goerli`
 
 3. Set the BedrockCcipVerifier and the gateway URL for your ENS name:
-- Currently, there is no Frontend available to do this directly.
-- You can use the script `setVerifierForDomain.ts` to perform the transaction.
-- Adjust the script by specifying your ENS name and URL, and then run the following command:
-        ```
-        npx hardhat run ./scripts/setVerifierForDomain.ts --network goerli
-        ```
+
+-   Currently, there is no Frontend available to do this directly.
+-   You can use the script `setVerifierForDomain.ts` to perform the transaction.
+-   Adjust the script by specifying your ENS name and URL, and then run the following command:
+    `    npx hardhat run ./scripts/setVerifierForDomain.ts --network goerli`
 
 Please make sure to replace `ENS_NAME` with your actual ENS name and adjust the URL accordingly. When running the scripts, specify the correct network (`goerli` in this example).
 
