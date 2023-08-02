@@ -4,19 +4,20 @@ This repository contains an app specific handler allowing to store ENS records o
 This repository contains contract that have to be deployed on Optimism and Ethereum aswell as a Gateway to resolve CCIP requests.
 Everything is configured already so to set it up you just have to follow the config Setup section
 
-# L2PubicResolver
+# Contracts
+## L2PubicResolver (L2)
 
 The L2PublicResolver is a Smart Contract derived from the ENS PublicResolver implementation. The functionality for setting records remains consistent with the original implementation. However, when retrieving a record, the caller is required to provide context, specifically the address of the record as per the ENS registry.
 
 This feature empowers record owners to securely set their records without needing direct access to the ENS Registry contract deployed on the Ethereum mainnet. By incorporating this mechanism, record owners can confidently manage their records in a trustless manner on Layer 2 solutions.
 
-## Context
+### Context
 
 The L2PublicResolver introduces a novel approach to record management by utilizing an arbitrary bytes string called "context" to define the namespace to which a record belongs. Specifically, in the context of the L2PublicResolver, this "context" refers to the address of the entity that has set a particular record.
 
 This allows for a more flexible and secure record-setting process, enabling record owners to establish records within their respective namespaces without direct access to the ENS Registry contract on the Ethereum mainnet. By associating records with specific addresses, users can confidently manage their records in a trustless manner on Layer 2 solutions.
 
-### Set record with Context
+#### Set record with Context
 
 The following example shows how a record can be set. Note that the contract will store both records regardless of them being dedicated to the same domain address and key.
 
@@ -34,7 +35,7 @@ L2Publicresolver.setText("alice.eth","my-key","bar");
 
 ```
 
-### Read record with Context
+#### Read record with Context
 
 When retrieving the record from L2, the context field includes the owner's address according to the ENS registry. This makes it possible to get the right value back from the resolver.
 
@@ -47,7 +48,7 @@ bytes memory value = L2Publicresolver.text(owner,"alice.eth","my-key","foo");
 
 ```
 
-## Profiles
+### Profiles
 
 The L2PublicResolver supports the following profiles
 
@@ -57,6 +58,14 @@ The L2PublicResolver supports the following profiles
 -   contentHash
 -   dns
 -   name
+
+## L2PublicResolverVerifier (L1)
+
+The L2PublicResolverVerifier is a smart contract designed to handle 'resolveWithProof' calls specifically dedicated to the L2PublicResolver contract. It serves as the counterpart of the L2PublicResolver and must be deployed for every new instance of the L2PublicResolver.
+
+The contract inherits from the BedrockCCIP Resolver and overrides 'resolveWithProof' for records that require special handling, such as addresses or ABIs.
+
+
 
 # Architecture
 The following diagrams show all the steps involved in performing a full CCIP lookup.
