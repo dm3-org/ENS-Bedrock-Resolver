@@ -4,7 +4,7 @@ const ENS_NAME = "alice123.eth";
 const URL = "http://localhost:8081/{sender}/{data}";
 
 const CCIP_RESOLVER = "0x5e0F81D5ca51D309B3A046FAeea70C4C70Df8079";
-const L2_PUBLIC_RESOLVER_VERIFIER = "0x4b0eb86177BffeB62e74b14c89d8817B3762BF14";
+const L2_PUBLIC_RESOLVER_VERIFIER = "0x183C1F81D0159794973c157694627a689DEB9F72";
 
 export const setVerifierForDomain = async () => {
     const [signer] = await hre.ethers.getSigners();
@@ -19,7 +19,7 @@ export const setVerifierForDomain = async () => {
     const tx = await signer.sendTransaction({
         to: CCIP_RESOLVER,
         data,
-        gasLimit: 500000,
+        gasLimit: 5000000,
     });
 
     console.log("Transaction hash: ", tx.hash);

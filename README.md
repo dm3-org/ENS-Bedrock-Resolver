@@ -176,7 +176,7 @@ To run a gateway perform the following steps
 
 CCIP Resolver : 0x5e0F81D5ca51D309B3A046FAeea70C4C70Df8079
 
-L2PublicResolverVerifier : 0x4b0eb86177BffeB62e74b14c89d8817B3762BF14
+L2PublicResolverVerifier : 0x183C1F81D0159794973c157694627a689DEB9F72
 
 ## Optimsim Goerli
 
