@@ -39,7 +39,8 @@ app.use(bodyParser.json());
 
     app.use('/', EnsBedrockHandler(provider, resolverAddress));
 })();
-const port = process.env.PORT || '8887';
+
+const port = '8887';
 server.listen(port, () => {
     app.locals.logger.info(
         '[Ens Handler] listening at port ' + port + ' and dir ' + __dirname,
