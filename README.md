@@ -70,6 +70,9 @@ The contract inherits from the BedrockCCIP Resolver and overrides 'resolveWithPr
 # Architecture
 The following diagrams show all the steps involved in performing a full CCIP lookup.
 
+
+![resolve](./Components-diagramm.png)
+
 ## Resolve
 
 Resolution according to ENSIP-10 is utilized to retrieve off-chain data. When calling the 'resolve' method, it reverts with an 'OffchainLookup,' which instructs the CCIP-Read Client on how to retrieve the request.
