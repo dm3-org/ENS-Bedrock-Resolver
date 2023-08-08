@@ -80,15 +80,6 @@ error OffchainLookup(address sender, string[] urls, bytes callData, bytes4 callb
 
 ![resolve](./Resolve-diagramm.png)
 
-1.1 Resolves the gateway URL from the OffchainLookup error. That URL contains the calldata and the contract address of the resolver
-
-1.2 The 'resolve' function extracts the gateway URL from the OffchainLookup error. This URL contains the calldata and the contract address of the resolver
-
-1.3 The process retrieves from the App-specific handler the slot that the proof should be created from. This step is separated to allow for an App-specific handler for any contract, not limited to the L2PublicResolver.
-
-1.4 The process fetches the requested data from Optimism and computes a Merkle Proof. This proof will later be used within 'resolveWithProof' to demonstrate that the data is indeed part of the Optimism state.
-
-1.5 It returns the encoded result along with its proof.
 
 ## ResolverWithProof
 Resolve that the response from the gateway is part of the optimism state and is originated from the resolver contract specified in the Verifier
