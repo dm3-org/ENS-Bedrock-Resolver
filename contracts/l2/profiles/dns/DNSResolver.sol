@@ -14,16 +14,16 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
     // Zone hashes for the domains.
     // A zone hash is an EIP-1577 content hash in binary format that should point to a
     // resource containing a single zonefile.
-    // node => contenthash
+    //[version_number][context][node] => zonehash
     mapping(uint64 => mapping(bytes => mapping(bytes32 => bytes))) private zonehash_with_context;
 
     // The records themselves.  Stored as binary RRSETs
-    // node => version => name => resource => data
+    //[version_number][context][node][namehash] => records
     mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(bytes32 => mapping(uint16 => bytes))))) private records_with_context;
 
     // Count of number of entries for a given name.  Required for DNS resolvers
     // when resolving wildcards.
-    // node => version => name => number of records
+    //[version_number][context][node][namehash] => name_entry
     mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(bytes32 => uint16)))) private nameEntries_with_context;
 
     /**

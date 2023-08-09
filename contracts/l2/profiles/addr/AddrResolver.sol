@@ -9,6 +9,7 @@ abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase 
     using BytesUtils for bytes;
     uint256 private constant COIN_TYPE_ETH = 60;
 
+    //[version_number][context][node][content_type] => addr
     mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(uint256 => bytes)))) public addresses_with_context;
 
     /**

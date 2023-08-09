@@ -70,6 +70,9 @@ The contract inherits from the BedrockCCIP Resolver and overrides 'resolveWithPr
 # Architecture
 The following diagrams show all the steps involved in performing a full CCIP lookup.
 
+
+![resolve](./Components-diagramm.png)
+
 ## Resolve
 
 Resolution according to ENSIP-10 is utilized to retrieve off-chain data. When calling the 'resolve' method, it reverts with an 'OffchainLookup,' which instructs the CCIP-Read Client on how to retrieve the request.
@@ -80,30 +83,14 @@ error OffchainLookup(address sender, string[] urls, bytes callData, bytes4 callb
 
 ![resolve](./Resolve-diagramm.png)
 
-1.1 Resolves the gateway URL from the OffchainLookup error. That URL contains the calldata and the contract address of the resolver
-
-1.2 The 'resolve' function extracts the gateway URL from the OffchainLookup error. This URL contains the calldata and the contract address of the resolver
-
-1.3 The process retrieves from the App-specific handler the slot that the proof should be created from. This step is separated to allow for an App-specific handler for any contract, not limited to the L2PublicResolver.
-
-1.4 The process fetches the requested data from Optimism and computes a Merkle Proof. This proof will later be used within 'resolveWithProof' to demonstrate that the data is indeed part of the Optimism state.
-
-1.5 It returns the encoded result along with its proof.
 
 ## ResolverWithProof
 Resolve that the response from the gateway is part of the optimism state and is originated from the resolver contract specified in the Verifier
 ![resolve](./ResolveWithProof-diagramm.png)
 
-2.1 Call 'resolveWithProof' with the data retrieved from Step 1 and the original calldata.
-
-2.2 Call 'onResolveWithProof' to determine which callback selector should be used to perform 'resolveWithProof' in order to support other EVM data types than bytes.
-
-2.3 Invoke the selector returned in step 2.2 to execute 'resolveWithProof.' This function performs the actual Merkle proof and returns the encoded data.
-
-2.4 If step 2.3 was successful, the function returns the result. Otherwise, it reverts for the following reasons:
+Resolve with proof might revert due to the following reasons
 
 1. If the proof target address does not match the address specified in the L2PublicResolverVerifier, an error message stating 'proof target does not match resolver' will be displayed. This security measure prevents malicious actors from deploying a different L2PublicResolver contract that could potentially return malicious data.
-2. If step 2.3 was successful, the function returns the result. However, if the result does not match the value stored in the slot, the contract reverts with the error message 'proof does not match response.'
 3. The contract will revert if the state root has not been committed to L1. This situation occurs when the stateRoot has not yet been pushed to the L2OutputOracle contract by the sequencer. It's important to note that it might take up to 30 minutes for a newly set record to become available and be successfully resolved. In that case the contract reverts with 'Account is not part of the provided state root'
 4. The proof may also be considered invalid for other reasons, often indicating an error in the gateway.
    

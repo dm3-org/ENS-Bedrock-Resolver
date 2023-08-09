@@ -6,6 +6,8 @@ import {INameResolver} from "./INameResolver.sol";
 
 abstract contract NameResolver is INameResolver, ResolverBase {
     using BytesUtils for bytes;
+
+    //[version_number][context][node]=> name
     mapping(uint64 => mapping(bytes => mapping(bytes32 => string))) public names_with_context;
 
     /**

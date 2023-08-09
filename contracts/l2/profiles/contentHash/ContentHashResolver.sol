@@ -6,6 +6,8 @@ import {IContentHashResolver} from "./IContentHashResolver.sol";
 
 abstract contract ContentHashResolver is IContentHashResolver, ResolverBase {
     using BytesUtils for bytes;
+
+    //[version_number][context][node] => content_hash
     mapping(uint64 => mapping(bytes => mapping(bytes32 => bytes))) contenthash_with_context;
 
     /**
