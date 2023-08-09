@@ -71,7 +71,7 @@ The contract inherits from the BedrockCCIP Resolver and overrides 'resolveWithPr
 The following diagrams show all the steps involved in performing a full CCIP lookup.
 
 
-![resolve](./Components-diagramm.png)
+![resolve](./Components.png)
 
 ## Resolve
 
