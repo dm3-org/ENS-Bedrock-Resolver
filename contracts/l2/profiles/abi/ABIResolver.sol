@@ -6,6 +6,7 @@ import {ResolverBase, BytesUtils} from "../ResolverBase.sol";
 
 abstract contract ABIResolver is IABIResolver, ResolverBase {
     using BytesUtils for bytes;
+    //[version_number][context][node][content_type] => abi
     mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(uint256 => bytes)))) abi_with_context;
 
     /**

@@ -12,6 +12,7 @@ interface IVersionableResolver {
 
 abstract contract ResolverBase is ERC165, IVersionableResolver {
     using BytesUtils for bytes;
+    //[context][node] => version_number
     mapping(bytes => mapping(bytes32 => uint64)) public recordVersions;
 
     /**

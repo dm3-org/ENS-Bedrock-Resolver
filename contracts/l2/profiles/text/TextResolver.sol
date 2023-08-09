@@ -6,6 +6,8 @@ import {ITextResolver} from "./ITextResolver.sol";
 
 abstract contract TextResolver is ITextResolver, ResolverBase {
     using BytesUtils for bytes;
+
+    //[version_number][context][node][key] => record
     mapping(uint64 => mapping(bytes => mapping(bytes32 => mapping(string => string)))) public texts_with_context;
 
     /**
