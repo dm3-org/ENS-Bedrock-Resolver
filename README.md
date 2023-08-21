@@ -161,7 +161,7 @@ To run a gateway perform the following steps
 
 ## Goerli
 
-CCIP Resolver : 0xaeB973dA621Ed58F0D8bfD6299031E8a2Ac39FD4
+CCIP Resolver : 0x4EF31c7447dd772d7ec50e8F9D258094e659bFA8
 
 L2PublicResolverVerifier : 0x183C1F81D0159794973c157694627a689DEB9F72
 
