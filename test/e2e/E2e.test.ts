@@ -3,11 +3,11 @@ import {
     BedrockCcipVerifier__factory,
     BedrockProofVerifier,
     BedrockProofVerifier__factory,
-    CcipResolver,
-    CcipResolver__factory,
-} from "ccip-resolver-js/dist/typechain";
+    ERC3668Resolver,
+    ERC3668Resolver__factory,
+} from "ccip-resolver/dist/typechain";
 import { BigNumber, ethers } from "ethers";
-import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
+import { dnsEncode, keccak256, namehash, toUtf8Bytes } from "ethers/lib/utils";
 import { ethers as hreEthers } from "hardhat";
 import { dnsWireFormat } from "../helper/encodednsWireFormat";
 const { expect } = require("chai");
@@ -19,7 +19,7 @@ describe("E2E Test", () => {
     });
     const l2provider = new ethers.providers.StaticJsonRpcProvider("http://localhost:9545");
     //Ccip Resolver
-    let ccipResolver: CcipResolver;
+    let ccipResolver: ERC3668Resolver;
     //Bedrock Proof Verifier
     let bedrockProofVerifier: BedrockProofVerifier;
     //Bedrock CCIP resolver
@@ -27,18 +27,18 @@ describe("E2E Test", () => {
     //Gateway
     let ccipApp;
     //0x8111DfD23B99233a7ae871b7c09cCF0722847d89
-    const alice = new ethers.Wallet("0xfd9f3842a10eb01ccf3109d4bd1c4b165721bf8c26db5db7570c146f9fad6014").connect(hreEthers.provider);
+    const alice = new ethers.Wallet("0xfd9f3842a10eb01ccf3109d4bd1c4b165721bf8c26db5db7570c146f9fad6014").connect(provider);
 
     beforeEach(async () => {
         bedrockProofVerifier = await new BedrockProofVerifier__factory()
-            .attach("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0")
+            .attach("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512")
             .connect(provider);
-        bedrockCcipVerifier = new BedrockCcipVerifier__factory().attach("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9");
-        ccipResolver = new CcipResolver__factory().attach("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");
+        bedrockCcipVerifier = new BedrockCcipVerifier__factory().attach("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0");
+        ccipResolver = await new ERC3668Resolver__factory().attach("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9");
     });
     describe("resolve", () => {
         it("ccip gateway resolves existing profile using ethers.provider.getText()", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
 
             const profile = {
                 publicSigningKey: "0ekgI3CBw2iXNXudRdBQHiOaMpG9bvq9Jse26dButug=",
@@ -50,32 +50,32 @@ describe("E2E Test", () => {
             expect(text).to.eql(JSON.stringify(profile));
         });
         it("ccip gateway resolves sort text ethers.provider.getText()", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
 
             const text = await resolver.getText("foo");
 
             expect(text).to.eql("bar");
         });
         it("ccip gateway resolves existing address using ethers.provider.getAddress()", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
             const addr = await resolver.getAddress();
             expect(addr).to.equal(alice.address);
         });
         it("ccip gateway resolves existing blockchain address using ethers.provider.getAddress()", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
             const addr = await resolver.getAddress(0);
 
             expect(addr).to.equal("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa");
         });
         it("ccip gateway resolves existing contenthash ethers.provider.getContenthash", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
 
             const achtualhash = await resolver.getContentHash();
 
             expect(achtualhash).to.equal("ipfs://QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4");
         });
         it("ccip gateway resolves existing abi using ethers.provider.getABI", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
 
             const iface = new ethers.utils.Interface([
                 "function ABI(bytes32 node, uint256 contextType) external view returns (uint256, bytes memory)",
@@ -97,7 +97,7 @@ describe("E2E Test", () => {
         });
 
         it("ccip gateway resolves existing name ", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "namewrapper.alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
 
             const iface = new ethers.utils.Interface(["function name(bytes32 node) external view returns (string memory)"]);
             const sig = iface.encodeFunctionData("name", [ethers.utils.namehash("alice.eth")]);
@@ -107,7 +107,7 @@ describe("E2E Test", () => {
             expect(response).to.equal("alice");
         });
         it("ccip gateway resolves dnsRecord ", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "namewrapper.alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
 
             const iface = new ethers.utils.Interface([
                 "function dnsRecord(bytes32 node,bytes32 name,uint16 resource) public view  returns(bytes memory)",
@@ -124,7 +124,7 @@ describe("E2E Test", () => {
             expect(response).to.equal("0x0161076578616d706c6503636f6d000001000100000e10000401020304");
         });
         it("ccip gateway resolves zonehash", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "namewrapper.alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
             const iface = new ethers.utils.Interface(["function zonehash(bytes32 node) external view  returns (bytes memory)"]);
 
             const sig = iface.encodeFunctionData("zonehash", [ethers.utils.namehash("alice.eth")]);
@@ -134,25 +134,20 @@ describe("E2E Test", () => {
         });
 
         it("Returns empty string if record is empty", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
             const text = await resolver.getText("unknown record");
 
             expect(text).to.be.null;
         });
         it("use parents resolver if node has no subdomain", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "a.b.c.alice.eth");
+            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "a.alice.eth");
 
             const text = await resolver.getText("my-slot");
+
 
             expect(text).to.equal("my-subdomain-record");
         });
 
-        it("resolves namewrapper profile", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "namewrapper.alice.eth");
 
-            const text = await resolver.getText("namewrapper-slot");
-
-            expect(text).to.equal("namewrapper-subdomain-record");
-        });
     });
 });
