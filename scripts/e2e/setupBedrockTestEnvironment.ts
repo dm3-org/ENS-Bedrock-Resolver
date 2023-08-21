@@ -2,7 +2,7 @@ import {
     BedrockProofVerifier,
     BedrockProofVerifier__factory,
     CcipResolver,
-    CcipResolver__factory,
+    ERC3668Resolver__factory,
     ENSRegistry__factory,
 } from "ccip-resolver/dist/typechain/";
 import { dnsEncode, keccak256, toUtf8Bytes } from "ethers/lib/utils";
@@ -108,6 +108,11 @@ const setupBedrockTestEnvironment = async () => {
         .setSubnodeOwner(ethers.utils.namehash("eth"), ethers.utils.keccak256(ethers.utils.toUtf8Bytes("alice")), l1Alice.address, {
             gasLimit: 500000,
         });
+    await ensRegistry
+        .connect(l1Alice)
+        .setSubnodeOwner(ethers.utils.namehash("alice.eth"), ethers.utils.keccak256(ethers.utils.toUtf8Bytes("a")), l1Alice.address, {
+            gasLimit: 500000,
+        });
 
     /**
      * ///////////////////////////////////////////////////////////////
@@ -120,11 +125,8 @@ const setupBedrockTestEnvironment = async () => {
     foreignResolver = await new L2PublicResolver__factory().connect(l2Whale).deploy();
     console.log(`L2 Foreign resolver deployed at ${foreignResolver.address}`);
 
-    ccipResolver = await new CcipResolver__factory().connect(l1Whale).deploy(ensRegistry.address, ethers.constants.AddressZero);
-    console.log(`CcipResolver deployed at ${ccipResolver.address}`);
 
     bedrockProofVerifier = await new BedrockProofVerifier__factory().connect(l1Whale).deploy("0x6900000000000000000000000000000000000000");
-
     console.log(`BedrockProofVerifier deployed at ${bedrockProofVerifier.address}`);
 
     l2PublicResolverVerifier = await new L2PublicResolverVerifier__factory()
@@ -132,6 +134,23 @@ const setupBedrockTestEnvironment = async () => {
         .deploy(whale.address, "localhost:8000/graphql", bedrockProofVerifier.address, l2PublicResolver.address);
 
     console.log(`BedrockCcipVerifier deployed at ${l2PublicResolverVerifier.address}`);
+
+
+
+    ccipResolver = await new ERC3668Resolver__factory()
+        .connect(l1Whale)
+        .deploy(
+            ensRegistry.address,
+            ethers.Wallet.createRandom().address,
+            l2PublicResolverVerifier.address,
+            ["http://localhost:8081/{sender}/{data}"],
+            {
+                gasLimit: 10000000,
+            }
+        );
+
+
+    console.log(`CcipResolver deployed at ${ccipResolver.address}`);
 
     //Setup resolver for alice.eth
     const ccipResolverTx = await ccipResolver
@@ -146,6 +165,7 @@ const setupBedrockTestEnvironment = async () => {
         );
 
     await ccipResolverTx.wait();
+
 
     console.log(`${alice.address} funded with ${await l2Provider.getBalance(alice.address)}`);
     console.log(`${bob.address} funded with ${await l2Provider.getBalance(bob.address)}`);
@@ -238,9 +258,10 @@ const setupBedrockTestEnvironment = async () => {
         const nodeName = dnsEncode("alice.eth");
         const name = "alice";
 
-        await l2PublicResolver.connect(alice.connect(l2Provider)).setName(nodeName, name, {
+        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setName(nodeName, name, {
             gasLimit: 1000000,
         });
+        await tx.wait();
     };
 
     const prepareSetDNS = async () => {
@@ -248,25 +269,32 @@ const setupBedrockTestEnvironment = async () => {
 
         const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
 
-        await l2PublicResolver.connect(alice.connect(l2Provider)).setDNSRecords(nodeName, "0x" + record, {
+        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setDNSRecords(nodeName, "0x" + record, {
             gasLimit: 1000000,
         });
+
+        await tx.wait();
     };
     const prepareSetZonehash = async () => {
         const nodeName = dnsEncode("alice.eth");
-        await l2PublicResolver.connect(alice.connect(l2Provider)).setZonehash(nodeName, keccak256(toUtf8Bytes("foo")), {
+        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setZonehash(nodeName, keccak256(toUtf8Bytes("foo")), {
             gasLimit: 1000000,
         });
+
+        await tx.wait();
     };
 
     const prepareTestSubdomain = async () => {
-        const name = dnsEncode("a.b.c.alice.eth");
+        const name = dnsEncode("a.alice.eth");
         const recordName = "my-slot";
         const value = "my-subdomain-record";
 
-        await l2PublicResolver.connect(alice.connect(l2Provider)).setText(name, recordName, value, {
+        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setText(name, recordName, value, {
             gasLimit: 1000000,
         });
+        await tx.wait();
+
+
     };
     const prepareTestSubdomain2 = async () => {
         const name = dnsEncode("alice.eth");
@@ -274,18 +302,22 @@ const setupBedrockTestEnvironment = async () => {
         const recordName = "bobs-slot";
         const value = "bobs-subdomain-record";
 
-        await l2PublicResolver.connect(bob.connect(l2Provider)).setText(name, recordName, value, {
+        const tx = await l2PublicResolver.connect(bob.connect(l2Provider)).setText(name, recordName, value, {
             gasLimit: 1000000,
         });
+        await tx.wait();
+
     };
     const nameWrapperProfile = async () => {
         const name = dnsEncode("namewrapper.alice.eth");
         const recordName = "namewrapper-slot";
         const value = "namewrapper-subdomain-record";
 
-        await l2PublicResolver.connect(alice.connect(l2Provider)).setText(name, recordName, value, {
+        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setText(name, recordName, value, {
             gasLimit: 1000000,
         });
+        await tx.wait();
+
     };
     //Prepare foreign resolver
     const prepareForeign = async () => {
