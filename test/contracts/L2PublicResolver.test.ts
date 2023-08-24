@@ -134,7 +134,32 @@ describe("L2PublicResolver", () => {
 
             expect(encodedBtcAddress).to.equal(btcAddress);
         });
+        it("delegate can set addr record context if approved", async () => {
+            const name = "subname.parent.eth";
+            const node = ethers.utils.namehash(name);
+            const context = user1.address;
+            try{
+                await l2PublicResolver.connect(user2)["setAddrFor(bytes,bytes,address)"](context, dnsEncode(name), user2.address);
+            }catch(e){
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver["addr(bytes,bytes32)"](context, node)).to.equal(
+                "0x0000000000000000000000000000000000000000"
+            );
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver.connect(user2)["setAddrFor(bytes,bytes,address)"](context, dnsEncode(name), user2.address);            
+            const receipt = await tx.wait();
+            const [addressChangedEvent] = receipt.events;
+            let [eventContext] = addressChangedEvent.args;
+            expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
+            expect(await l2PublicResolver["addr(bytes,bytes32)"](user1.address, node)).to.equal(
+                user2.address
+            );
+        });
     });
+
     describe("ABIResolver", () => {
         it("set abi record on L2", async () => {
             const name = "dm3.eth";

@@ -19,6 +19,47 @@ import {NameResolver} from "./profiles/name/NameResolver.sol";
  */
 contract L2PublicResolver is Multicallable, AddrResolver, TextResolver, ABIResolver, ContentHashResolver, DNSResolver, NameResolver {
     /**
+     * A mapping of delegates. A delegate that is authorised for a context
+     * for a name may make changes to the record.
+     * (context, name, delegate) => approved
+     */
+    mapping(bytes => mapping(bytes => mapping(address => bool)))
+        private _approvals;
+
+    // Logged when a delegate is approved or  an approval is revoked.
+    event Approved(
+        bytes context,
+        bytes name,
+        address indexed delegate,
+        bool indexed approved
+    );
+
+    /**
+     * @dev Approve a delegate to be able to updated records on a node.
+     */
+    function approve(bytes calldata name, address delegate, bool approved) external {
+        require(msg.sender != delegate, "Setting delegate status for self");
+        bytes memory context = abi.encodePacked(msg.sender);
+        _approvals[context][name][delegate] = approved;
+        emit Approved(context, name, delegate, approved);
+    }
+
+    /**
+     * @dev Check to see if the delegate has been approved by the owner for the node.
+     */
+    function isApprovedFor(
+        bytes calldata context,
+        bytes calldata name,
+        address delegate
+    ) public view returns (bool) {
+        return _approvals[context][name][delegate];
+    }
+
+    function isAuthorised(bytes calldata context, bytes calldata name) internal view override returns (bool) {
+        return isApprovedFor(context, name, msg.sender);
+    }
+
+    /**
      * @dev Checks whether the contract supports a specific interface by its identifier.
      * @param interfaceID The identifier of the interface to check, represented as a bytes4 value.
      * @return A boolean value indicating whether the contract supports the given interface.

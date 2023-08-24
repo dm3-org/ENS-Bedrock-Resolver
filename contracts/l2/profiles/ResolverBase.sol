@@ -15,6 +15,13 @@ abstract contract ResolverBase is ERC165, IVersionableResolver {
     //[context][node] => version_number
     mapping(bytes => mapping(bytes32 => uint64)) public recordVersions;
 
+    function isAuthorised(bytes calldata context, bytes calldata name) internal view virtual returns (bool);
+
+    modifier authorised(bytes calldata context, bytes calldata name) {
+        require(isAuthorised(context, name), "Not authorised");
+        _;
+    }
+
     /**
      * Increments the record version associated with an ENS node.
      * May only be called by the owner of that node in the ENS registry.

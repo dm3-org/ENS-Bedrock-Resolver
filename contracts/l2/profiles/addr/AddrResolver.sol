@@ -29,6 +29,19 @@ abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase 
         setAddr(name, COIN_TYPE_ETH, addressToBytes(a));
     }
 
+    function setAddrFor(bytes calldata context, bytes calldata name, address a) external virtual {
+        setAddrFor(context, name, COIN_TYPE_ETH, addressToBytes(a));
+    }
+
+    function setAddrFor(bytes calldata context, bytes calldata name, uint256 coinType, bytes memory a) public virtual authorised(context, name) {
+        bytes32 node = name.namehash(0);
+        emit AddressChanged(context, name, node, coinType, a);
+        if (coinType == COIN_TYPE_ETH) {
+            emit AddrChanged(context, name, node, bytesToAddress(a));
+        }
+        addresses_with_context[recordVersions[context][node]][context][node][coinType] = a;
+    }
+
     /**
      * @dev Retrieves the address record associated with a given context and node.
      * @param context The context representing the owner of the address record, provided as a byte array.
