@@ -9,6 +9,7 @@ import { dnsEncode, keccak256, toUtf8Bytes } from "ethers/lib/utils";
 import { dnsWireFormat } from "../helper/encodednsWireFormat";
 
 import { formatsByCoinType } from "@ensdomains/address-encoder";
+import { assert } from "console";
 
 describe("L2PublicResolver", () => {
     let user1: SignerWithAddress;
@@ -202,6 +203,32 @@ describe("L2PublicResolver", () => {
             expect(eventName).to.equal(dnsEncode(name));
             expect(eventNode).to.equal(node);
             expect(eventContentType.toNumber()).to.equal(1);
+
+            const [actualContentType, actualAbi] = await l2PublicResolver.ABI(user1.address, node, 1);
+
+            expect(actualContentType.toNumber()).to.equal(1);
+            expect(Buffer.from(actualAbi.slice(2), "hex").toString()).to.equal(abi.toString());
+        });
+        it("delegate can set abi record context if approved", async () => {
+            const name = "subname.parent.eth";
+            const node = ethers.utils.namehash(name);
+            const context = user1.address;
+            const abi = l2PublicResolver.interface.format(ethers.utils.FormatTypes.json);
+
+            try {
+                const tx = await l2PublicResolver.connect(user2).setABIFor(context, dnsEncode(name), 1, ethers.utils.toUtf8Bytes(abi.toString()));
+            } catch (e) {
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver.ABI(context, node, 1)).to.eql([BigNumber.from(0), "0x"]);
+
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver.connect(user2).setABIFor(context, dnsEncode(name), 1, ethers.utils.toUtf8Bytes(abi.toString()));
+            const receipt = await tx.wait();
+            const [addressChangedEvent] = receipt.events;
+            const [eventContext] = addressChangedEvent.args;
 
             const [actualContentType, actualAbi] = await l2PublicResolver.ABI(user1.address, node, 1);
 
