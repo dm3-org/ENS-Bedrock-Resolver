@@ -12,7 +12,7 @@ const DEFAULT_VERIFIER_ADDRESS = process.env.L2_PUBLIC_RESOLVER_VERIFIER_ADDRESS
 const DEFAULT_VERIFIER_URL = process.env.DEFAULT_VERIFIER_URL;
 
 async function main() {
-    if(!DEFAULT_VERIFIER_ADDRESS || DEFAULT_VERIFIER_URL){throw("Must set DEFAULT_VERIFIER_ADDRESS and DEFAULT_VERIFIER_URL")}
+    if(!(DEFAULT_VERIFIER_ADDRESS && DEFAULT_VERIFIER_URL)){throw("Must set DEFAULT_VERIFIER_ADDRESS and DEFAULT_VERIFIER_URL")}
     const [deployer] = await hre.ethers.getSigners();
 
     const namewrapper = NAMEWRAPPER_GOERLI;
