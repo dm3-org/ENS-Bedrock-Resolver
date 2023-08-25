@@ -1,0 +1,15 @@
+WORKDIR /bedrock
+COPY ./ENS-Bedrock-Resolver/. .
+RUN apk add --no-cache git openssh g++ make py3-pip
+RUN yarn install
+RUN yarn build
+
+ENV L2_PROVIDER_URL="<L2_PROVIDER_URL>"
+ENV CONFIG="{\"<ERC3668_RESOLVER_ADDRESS>\":{\"type\":\"optimism-bedrock\",\"handlerUrl\":\"http://localhost:8887\",\"l1ProviderUrl\":\"https://goerli.infura.io/v3/<YOUR_PROJECT_ID>\",\"l2ProviderUrl\":\"https://optimism-goerli.infura.io/v3/<YOUR_PROJECT_ID>\",\"l1chainId\":\"5\",\"l2chainId\":\"<L2_CHAIN_ID>\"}}"
+
+WORKDIR /app
+COPY . .
+RUN yarn install
+RUN yarn build
+CMD (yarn --cwd /bedrock dev &) && yarn start 
+EXPOSE 8081
