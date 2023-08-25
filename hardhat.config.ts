@@ -13,6 +13,7 @@ import "hardhat-tracer";
 import { ethers } from "ethers";
 
 const OPTIMISTIC_ETHERSCAN_API_KEY = process.env.OPTIMISTIC_ETHERSCAN_API_KEY;
+const BASE_ETHERSCAN_API_KEY = process.env.BASE_ETHERSCAN_API_KEY;
 const GOERLI_ETHERSCAN_API_KEY = process.env.GOERLI_ETHERSCAN_API_KEY;
 
 const GOERLI_URL = process.env.L1_PROVIDER_URL ?? "";
@@ -25,6 +26,10 @@ module.exports = {
             url: "https://goerli.optimism.io",
             accounts: [DEPLOYER_PRIVATE_KEY],
         },
+        baseGoerli: {
+            url: "https://goerli.base.org",
+            accounts: [DEPLOYER_PRIVATE_KEY],
+        },
         goerli: {
             url: GOERLI_URL,
             accounts: [DEPLOYER_PRIVATE_KEY],
@@ -35,6 +40,7 @@ module.exports = {
     etherscan: {
         apiKey: {
             optimismGoerli: OPTIMISTIC_ETHERSCAN_API_KEY,
+            baseGoerli: BASE_ETHERSCAN_API_KEY,
             goerli: GOERLI_ETHERSCAN_API_KEY
         },
         customChains: [
@@ -44,6 +50,14 @@ module.exports = {
                 urls: {
                     apiURL: "https://api-goerli-optimism.etherscan.io/api",
                     browserURL: "https://goerli-optimism.etherscan.io"
+                }
+            },
+            {
+                network: "baseGoerli",
+                chainId: 84531,
+                urls: {
+                    browserURL: "https://goerli.basescan.org",
+                    apiURL: "https://api-goerli.basescan.org/api",
                 }
             }
         ]

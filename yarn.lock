@@ -3755,10 +3755,6 @@ enquirer@^2.3.0, enquirer@^2.3.6:
   dependencies:
     ansi-colors "^4.1.1"
 
-"ens-contracts-legacy@git+https://github.com/ensdomains/resolvers.git#v0.1.7":
-  version "0.1.7"
-  resolved "git+https://github.com/ensdomains/resolvers.git#899fee8c85fd60ebe04855f0991da3d796ff6081"
-
 "ens-contracts-legacy@https://github.com/ensdomains/resolvers.git#v0.1.7":
   version "0.1.7"
   resolved "https://github.com/ensdomains/resolvers.git#899fee8c85fd60ebe04855f0991da3d796ff6081"
