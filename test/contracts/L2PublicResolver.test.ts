@@ -138,9 +138,9 @@ describe("L2PublicResolver", () => {
             const name = "subname.parent.eth";
             const node = ethers.utils.namehash(name);
             const context = user1.address;
-            try{
+            try {
                 await l2PublicResolver.connect(user2)["setAddrFor(bytes,bytes,address)"](context, dnsEncode(name), user2.address);
-            }catch(e){
+            } catch (e) {
                 expect(e.message).to.include("Not authorised");
             }
             // record should be empty
@@ -149,7 +149,7 @@ describe("L2PublicResolver", () => {
             );
             const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
             await tx0.wait();
-            const tx = await l2PublicResolver.connect(user2)["setAddrFor(bytes,bytes,address)"](context, dnsEncode(name), user2.address);            
+            const tx = await l2PublicResolver.connect(user2)["setAddrFor(bytes,bytes,address)"](context, dnsEncode(name), user2.address);
             const receipt = await tx.wait();
             const [addressChangedEvent] = receipt.events;
             let [eventContext] = addressChangedEvent.args;

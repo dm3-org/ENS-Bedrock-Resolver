@@ -15,9 +15,22 @@ abstract contract ResolverBase is ERC165, IVersionableResolver {
     //[context][node] => version_number
     mapping(bytes => mapping(bytes32 => uint64)) public recordVersions;
 
-    function isAuthorised(bytes calldata context, bytes calldata name) internal view virtual returns (bool);
+    /**
+     * @dev Checks whether the sender is authorized to perform an action on a specific record within a given context and name.
+     * @param context The context associated with the record.
+     * @param name The name of the record being checked.
+     * @return A boolean indicating whether the sender is authorized to perform the action.
+     * @notice This function is internal, view-only, and is meant to be overridden by derived contracts.
+     */
+    function isAuthorised(bytes memory context, bytes calldata name) internal view virtual returns (bool);
 
-    modifier authorised(bytes calldata context, bytes calldata name) {
+    /**
+     * @dev Modifier to check whether the sender is authorized to perform an action on a specific record within a given context and name.
+     * @param context The context associated with the record.
+     * @param name The name of the record being checked.
+     * @notice If the sender is not authorized, the function call will revert with "Not authorised" error message.
+     */
+    modifier authorised(bytes memory context, bytes calldata name) {
         require(isAuthorised(context, name), "Not authorised");
         _;
     }
@@ -34,6 +47,13 @@ abstract contract ResolverBase is ERC165, IVersionableResolver {
         emit VersionChanged(context, name, node, recordVersions[context][node]);
     }
 
+    /**
+     * @dev Checks if the contract supports a specific interface.
+     * @param interfaceID The interface identifier being checked.
+     * @return A boolean indicating whether the contract supports the specified interface.
+     * @notice This function is public, view-only, and is meant to determine interface support for ERC-165.
+     * @notice It checks for support of the IVersionableResolver interface and delegates to the parent contract's supportsInterface function if not recognized.
+     */
     function supportsInterface(bytes4 interfaceID) public view virtual override returns (bool) {
         return interfaceID == type(IVersionableResolver).interfaceId || super.supportsInterface(interfaceID);
     }
