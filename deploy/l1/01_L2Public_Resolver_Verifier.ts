@@ -1,21 +1,29 @@
 import hre, { ethers } from "hardhat";
 
-const L2_PUBLIC_RESOLVER_ADDRESS = "0xc1C2b9dD2D15045D52640e120a2d1F16dA3bBb48";
-const BEDROCK_PROOF_VERIFIER_ADDRESS = "0x37c75DaE09e82Cd0211Baf95DE18f069F64Cb069";
-
+const L2_RESOLVER_ADDRESS = process.env.L2_RESOLVER_ADDRESS
+const BEDROCK_PROOF_VERIFIER_ADDRESS = process.env.BEDROCK_PROOF_VERIFIER_ADDRESS
+const CHAIN_NAME = process.env.L2_CHAIN_NAME
+const CHAIN_ID = process.env.L2_CHAIN_ID
 const GRAPHQL_ADDRESS = "http://localhost:8081/graphql"
 
 async function main() {
-
     const [owner] = await ethers.getSigners();
     const L2PublicResolverVerifier = await ethers.getContractFactory("L2PublicResolverVerifier");
-    const deployTx = await L2PublicResolverVerifier.deploy(owner.address, GRAPHQL_ADDRESS, BEDROCK_PROOF_VERIFIER_ADDRESS, L2_PUBLIC_RESOLVER_ADDRESS);
+    console.log({
+        ownerAddress:owner.address, GRAPHQL_ADDRESS,CHAIN_NAME, CHAIN_ID, BEDROCK_PROOF_VERIFIER_ADDRESS, L2_RESOLVER_ADDRESS
+    })     
+    const deployTx = await L2PublicResolverVerifier
+        .deploy(
+            owner.address, GRAPHQL_ADDRESS, CHAIN_NAME, CHAIN_ID,BEDROCK_PROOF_VERIFIER_ADDRESS, L2_RESOLVER_ADDRESS
+            ,{gasLimit: 5000000}
+        );
     await deployTx.deployed();
 
     console.log(`L2PublicResolverVerifier deployed at  ${deployTx.address}`);
     console.log(
-        `Verify the contract using  npx hardhat verify --network ${hre.network.name} ${deployTx.address} ${owner.address} ${GRAPHQL_ADDRESS} ${BEDROCK_PROOF_VERIFIER_ADDRESS} ${L2_PUBLIC_RESOLVER_ADDRESS} `
+            `Verify the contract using  npx hardhat verify --network ${hre.network.name} ${deployTx.address} ${owner.address} ${GRAPHQL_ADDRESS} "${CHAIN_NAME}" ${CHAIN_ID} ${BEDROCK_PROOF_VERIFIER_ADDRESS} ${L2_RESOLVER_ADDRESS} `
     );
+    console.log(`Run export L2_PUBLIC_RESOLVER_VERIFIER_ADDRESS=${deployTx.address}`)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

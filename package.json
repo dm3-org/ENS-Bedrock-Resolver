@@ -15,6 +15,10 @@
         "build": "yarn hardhat compile && yarn tsc -p tsconfig-build.json",
         "dev": " node dist/server/index.js",
         "docker:build": "docker build -t ens-bedrock-resolver -f ./Dockerfile .",
+        "deploy:l1-proof-verifier": "npx hardhat run ./deploy/l1/00_BedrockProofVerifier.ts",
+        "deploy:l2-resolver": "npx hardhat run deploy/l2/01_L2Public_Resolver.ts",
+        "deploy:l1-resolver-verifier": "npx hardhat run ./deploy/l1/01_L2Public_Resolver_Verifier.ts",
+        "deploy:l1-resolver": "npx hardhat run ./deploy/l1/02_ERC3668_Resolver.ts",
         "start": "docker compose up -d "
     },
     "files": [
