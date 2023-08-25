@@ -13,9 +13,11 @@ contract L2PublicResolverVerifier is BedrockCcipVerifier {
     constructor(
         address _owner,
         string memory _graphqlUrl,
+        string memory _name,
+        uint256 _chainId,
         IBedrockProofVerifier _bedrockProofVerifier,
         address _target
-    ) BedrockCcipVerifier(_owner, _graphqlUrl, _bedrockProofVerifier, _target) {}
+    ) BedrockCcipVerifier(_owner, _graphqlUrl, _name, _chainId, _bedrockProofVerifier, _target) {}
 
     /**
      * @dev The default resolveWithProof function
