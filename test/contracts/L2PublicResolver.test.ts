@@ -302,6 +302,35 @@ describe("L2PublicResolver", () => {
 
             expect(actualValue).to.equal("0x" + record);
         });
+        it("delegate can set DNS record context if approved", async () => {
+            const name = "subname.parent.eth";
+            const node = ethers.utils.namehash(name);
+            const context = user1.address;
+            const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
+            try {
+                await l2PublicResolver.connect(user2).setDNSRecordsFor(context, dnsEncode(name), "0x" + record);
+                console.log("should not be here");
+            } catch (e) {
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver.dnsRecord(context, node, keccak256("0x" + record.substring(0, 30)), 1)).to.equal(
+                "0x"
+            );
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver.connect(user2).setDNSRecordsFor(context, dnsEncode(name), "0x" + record);
+            const receipt = await tx.wait();
+            const [delegateChangedEvent] = receipt.events;
+            const [eventContext] = delegateChangedEvent.args;
+
+            expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
+
+            const actualValue = await l2PublicResolver.dnsRecord(user1.address, node, keccak256("0x" + record.substring(0, 30)), 1);
+
+            expect(actualValue).to.equal("0x" + record);
+
+        })
         it("set zonehash on L2", async () => {
             const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
             const node = ethers.utils.namehash(ethers.utils.nameprep("dm3.eth"));
@@ -320,6 +349,34 @@ describe("L2PublicResolver", () => {
 
             expect(actualValue).to.equal(keccak256(toUtf8Bytes("foo")));
         });
+        it("delegate can set zonehash context if approved", async () => {
+            const name = "subname.parent.eth";
+            const node = ethers.utils.namehash(name);
+            const context = user1.address;
+            const record = dnsWireFormat("a.example.com", 3600, 1, 1, "");
+            try {
+                await l2PublicResolver.connect(user2).setZonehashFor(context, dnsEncode(name), keccak256(toUtf8Bytes("foo")));
+                console.log("should not be here");
+            } catch (e) {
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver.zonehash(context, node)).to.equal(
+                "0x"
+            );
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver.connect(user2).setZonehashFor(context, dnsEncode(name), keccak256(toUtf8Bytes("foo")));
+            const receipt = await tx.wait();
+            const [delegateChangedEvent] = receipt.events;
+            const [eventContext] = delegateChangedEvent.args;
+
+            expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
+
+            const actualValue = await l2PublicResolver.zonehash(user1.address, node);
+
+            expect(actualValue).to.equal(keccak256(toUtf8Bytes("foo")));
+        })
     });
 
     describe("Name", () => {
