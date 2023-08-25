@@ -70,6 +70,31 @@ describe("L2PublicResolver", () => {
             // record of the owned node should be changed
             expect(await l2PublicResolver.text(user1.address, node, "network.dm3.profile")).to.equal("test");
         });
+        it("delegate can set text record context if approved", async () => {
+            const name = "subname.parent.eth";
+            const node = ethers.utils.namehash(name);
+            const context = user1.address;
+            const record = "test";
+            const value = "my-delegated-value"
+            try {
+                await l2PublicResolver.connect(user2).setTextFor(context, dnsEncode(name), record, "test");
+            } catch (e) {
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver.text(context, node, record)).to.equal("");
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver.connect(user2).setTextFor(context, dnsEncode(name), record, value);
+            const receipt = await tx.wait();
+            const [addressChangedEvent] = receipt.events;
+            const [eventContext] = addressChangedEvent.args;
+
+            expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
+            expect(await l2PublicResolver.text(user1.address, node, record)).to.equal(
+                value
+            );
+        });
     });
 
     describe("AddrResolver", () => {
