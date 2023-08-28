@@ -11,18 +11,20 @@ module.exports.default = main;
 
 async function main() {
     const L2_OUTPUT_ORALCE_GOERLI = process.env.L2_OUTPUT_ORALCE_GOERLI;
-    const L2_OUTPUT_ORALCE_MAINNET = process.env.L2_OUTPUT_ORALCE_MAINNET    
+    const L2_OUTPUT_ORALCE_MAINNET = process.env.L2_OUTPUT_ORALCE_MAINNET
     const l2OutputOracleAddress = hre.network.name === 'mainnet' ? L2_OUTPUT_ORALCE_MAINNET : L2_OUTPUT_ORALCE_GOERLI;
-    if(!l2OutputOracleAddress){throw("l2OutputOracleAddress must be set")}
+    if (!l2OutputOracleAddress) {
+        throw ("l2OutputOracleAddress must be set")
+    }
 
-    console.log({l2OutputOracleAddress})
+    console.log({ l2OutputOracleAddress })
     const [deployer] = await hre.ethers.getSigners();
     const deployTx = await
-    new BedrockProofVerifier__factory()
-        .connect(deployer)
-        .deploy(l2OutputOracleAddress, {
-        gasLimit: 5000000,
-    });
+        new BedrockProofVerifier__factory()
+            .connect(deployer)
+            .deploy(l2OutputOracleAddress, {
+                gasLimit: 5000000,
+            });
 
     await deployTx.deployed();
 

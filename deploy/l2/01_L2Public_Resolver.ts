@@ -9,8 +9,8 @@ async function main() {
 
     const L2PublicResolverFactory = await ethers.getContractFactory("L2PublicResolver");
     const deployTx = await L2PublicResolverFactory.deploy({
-        gasLimit: 5000000,
-        gasPrice: "900000"
+        gasLimit: 30000000,
+        gasPrice: "90000000"
     });
 
     await deployTx.deployed();

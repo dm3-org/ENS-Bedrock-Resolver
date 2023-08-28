@@ -71,14 +71,16 @@ module.exports = {
     solidity: {
         compilers: [
             {
-                version: "0.8.17",
-                viaIR: true,
-                optimizer: {
-                    enabled: true,
-                    runs: 100000,
-                    details: {
-                        yulDetails: {
-                            optimizerSteps: "u",
+                version: '0.8.17',
+                settings: {
+                    viaIR: true,
+                    optimizer: {
+                        enabled: true,
+                        
+                        details: {
+                            yulDetails: {
+                                optimizerSteps: 'u',
+                            },
                         },
                     },
                 },
