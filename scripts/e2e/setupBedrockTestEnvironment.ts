@@ -131,7 +131,7 @@ const setupBedrockTestEnvironment = async () => {
 
     l2PublicResolverVerifier = await new L2PublicResolverVerifier__factory()
         .connect(l1Whale)
-        .deploy(whale.address, "localhost:8000/graphql", bedrockProofVerifier.address, l2PublicResolver.address);
+        .deploy(whale.address, "localhost:8000/graphql", "", 420, bedrockProofVerifier.address, l2PublicResolver.address);
 
     console.log(`BedrockCcipVerifier deployed at ${l2PublicResolverVerifier.address}`);
 
