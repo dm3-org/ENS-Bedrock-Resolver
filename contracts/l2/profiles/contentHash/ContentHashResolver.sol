@@ -14,22 +14,21 @@ abstract contract ContentHashResolver is IContentHashResolver, ResolverBase {
      * @dev Sets a content hash for a given name.
      * @param name The DNS encoded domain name.
      * @param hash The content hash to be set for the specified name, represented as a byte array.
-     *
-     * This function allows the caller to set a content hash for a specific name.
-     * The caller provides the `name`, which represents the name associated with the content hash record.
-     * The `hash` parameter is the actual content hash that needs to be associated with the specified name.
-     *
-     * The function computes the node hash for the provided `name` using the `namehash` function.
-     * It then encodes the caller's address as `context` using the `abi.encodePacked` function.
-     * The function sets the `hash` for the specified `name` in the `contenthash_with_context` mapping,
-     * using the version number associated with the caller's `context` and node.
-     *
-     * The function also emits a `ContenthashChanged` event to notify listeners about the change in the content hash record.
-     *
      */
     function setContenthash(bytes calldata name, bytes calldata hash) external virtual {
-        bytes32 node = name.namehash(0);
         bytes memory context = abi.encodePacked(msg.sender);
+        setContenthashFor(context, name, hash);
+    }
+
+    /**
+     * @dev Sets the contenthash data for a specific context and name.
+     * @param context The context identifier under which the contenthash data is being set.
+     * @param name The name of the entity for which contenthash data is being set.
+     * @param hash The contenthash to be set for the specified context and name.
+     *
+     */
+    function setContenthashFor(bytes memory context, bytes calldata name, bytes calldata hash) public virtual authorised(context, name) {
+        bytes32 node = name.namehash(0);
         contenthash_with_context[recordVersions[context][node]][context][node] = hash;
         emit ContenthashChanged(context, name, node, hash);
     }

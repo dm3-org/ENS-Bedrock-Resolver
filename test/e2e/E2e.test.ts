@@ -144,10 +144,7 @@ describe("E2E Test", () => {
 
             const text = await resolver.getText("my-slot");
 
-
             expect(text).to.equal("my-subdomain-record");
         });
-
-
     });
 });

@@ -45,7 +45,7 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
      * @param ensName The DNS encoded domain name.
      * @param data the DNS wire format records to set
      */
-    function setDNSRecords(bytes calldata ensName, bytes calldata data) external virtual {
+    function _setDNSRecordsFor(bytes memory context, bytes calldata ensName, bytes calldata data) internal virtual {
         bytes32 node = ensName.namehash(0);
         uint16 resource = 0;
         uint256 offset = 0;
@@ -53,7 +53,6 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
         bytes memory value;
         bytes32 nameHash;
 
-        bytes memory context = abi.encodePacked(msg.sender);
         uint64 version = recordVersions[context][node];
 
         // Iterate over the data to add the resource records
@@ -67,7 +66,7 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
             } else {
                 bytes memory newName = iter.name();
                 if (resource != iter.dnstype || !name.equals(newName)) {
-                    setDNSRRSet(node, name, resource, data, offset, iter.offset - offset, value.length == 0, version);
+                    setDNSRRSet(context, node, name, resource, data, offset, iter.offset - offset, value.length == 0, version);
                     resource = iter.dnstype;
                     offset = iter.offset;
                     name = newName;
@@ -78,8 +77,21 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
         }
         if (name.length > 0) {
             uint size = data.length - offset; //Prevent stack to deep error
-            setDNSRRSet(node, name, resource, data, offset, size, value.length == 0, version);
+            setDNSRRSet(context, node, name, resource, data, offset, size, value.length == 0, version);
         }
+    }
+
+    function setDNSRecordsFor(
+        bytes memory context,
+        bytes calldata ensName,
+        bytes calldata data
+    ) public virtual authorised(context, ensName) {
+        _setDNSRecordsFor(context, ensName, data);
+    }
+
+    function setDNSRecords(bytes calldata ensName, bytes calldata data) external virtual {
+        bytes memory context = abi.encodePacked(msg.sender);
+        setDNSRecordsFor(context, ensName, data);
     }
 
     /**
@@ -114,8 +126,12 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
      * @param hash The zonehash to set
      */
     function setZonehash(bytes calldata name, bytes calldata hash) external virtual {
-        bytes32 node = name.namehash(0);
         bytes memory context = abi.encodePacked(msg.sender);
+        setZonehashFor(context, name, hash);
+    }
+
+    function setZonehashFor(bytes memory context, bytes calldata name, bytes calldata hash) public virtual authorised(context, name) {
+        bytes32 node = name.namehash(0);
         uint64 currentRecordVersion = recordVersions[context][node];
         bytes memory oldhash = zonehash_with_context[currentRecordVersion][context][node];
         zonehash_with_context[currentRecordVersion][context][node] = hash;
@@ -139,6 +155,7 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
     }
 
     function setDNSRRSet(
+        bytes memory context,
         bytes32 node,
         bytes memory name,
         uint16 resource,
@@ -148,7 +165,6 @@ abstract contract DNSResolver is IDNSRecordResolver, IDNSZoneResolver, ResolverB
         bool deleteRecord,
         uint64 version
     ) private {
-        bytes memory context = abi.encodePacked(msg.sender);
         bytes32 nameHash = keccak256(name);
         bytes memory rrData = data.substring(offset, size);
 

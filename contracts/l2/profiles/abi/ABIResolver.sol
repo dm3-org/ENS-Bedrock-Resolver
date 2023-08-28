@@ -25,10 +25,26 @@ abstract contract ABIResolver is IABIResolver, ResolverBase {
      * The function also emits an `ABIChanged` event to notify listeners about the change in the ABI record.
      */
     function setABI(bytes calldata name, uint256 contentType, bytes calldata data) external virtual {
+        bytes memory context = abi.encodePacked(msg.sender);
+        setABIFor(context, name, contentType, data);
+    }
+
+    /**
+     * @dev Sets the ABI data for a specific context, name, and content type.
+     * @param context The context identifier under which the ABI data is being set.
+     * @param name The name of the entity for which ABI data is being set.
+     * @param contentType The type of content for which the ABI data is being set.
+     * @param data The ABI data to be set for the specified context, name, and content type.
+     */
+    function setABIFor(
+        bytes memory context,
+        bytes calldata name,
+        uint256 contentType,
+        bytes calldata data
+    ) public virtual authorised(context, name) {
         // Content types must be powers of 2
         require(((contentType - 1) & contentType) == 0);
         bytes32 node = name.namehash(0);
-        bytes memory context = abi.encodePacked(msg.sender);
         abi_with_context[recordVersions[context][node]][context][node][contentType] = data;
         emit ABIChanged(context, name, node, contentType);
     }

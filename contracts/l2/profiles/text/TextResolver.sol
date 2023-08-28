@@ -15,22 +15,26 @@ abstract contract TextResolver is ITextResolver, ResolverBase {
      * @param name The DNS encoded domain name.
      * @param key The key under which the text record is being set, represented as a string.
      * @param value The value of the text record being set, represented as a string.
-     *
-     * This function allows the caller to set a text record for a specific name, associated with a given key and value.
-     * The caller provides the `name`, which represents the name associated with the text record.
-     * The `key` parameter is a string under which the text record is being set, and the `value` parameter is the actual
-     * text value that needs to be associated with the specified name and key.
-     *
-     * The function internally computes the node hash for the provided `name` using the `namehash` function.
-     * It then encodes the caller's address as `context` using the `abi.encodePacked` function.
-     * The function sets the `value` for the specified `key` in the `texts_with_context` mapping, using the version number
-     * associated with the caller's `context` and node.
-     *
-     * The function also emits a `TextChanged` event to notify listeners about the change in the text record.
      */
     function setText(bytes calldata name, string calldata key, string calldata value) external virtual {
-        bytes32 node = name.namehash(0);
         bytes memory context = abi.encodePacked(msg.sender);
+        setTextFor(context, name, key, value);
+    }
+
+    /**
+     * @dev Sets a string value associated with a specific context, name, and key.
+     * @param context The context under which the string value is being set.
+     * @param name The DNS encoded domain name.
+     * @param key The key identifier for the string value.
+     * @param value The string value to be set.
+     */
+    function setTextFor(
+        bytes memory context,
+        bytes calldata name,
+        string calldata key,
+        string calldata value
+    ) public virtual authorised(context, name) {
+        bytes32 node = name.namehash(0);
         texts_with_context[recordVersions[context][node]][context][node][key] = value;
         emit TextChanged(context, name, node, key, key, value);
     }

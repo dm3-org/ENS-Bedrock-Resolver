@@ -18,7 +18,9 @@ describe("L2PublicResolver", () => {
     beforeEach(async () => {
         [user1, user2] = await ethers.getSigners();
         const l2PublicResolverFactory = await ethers.getContractFactory("L2PublicResolver");
-        l2PublicResolver = (await l2PublicResolverFactory.deploy()) as L2PublicResolver;
+        l2PublicResolver = (await l2PublicResolverFactory.deploy({
+            gasLimit: 30000000,
+        })) as L2PublicResolver;
     });
 
     describe("Clear records", async () => {
@@ -69,6 +71,29 @@ describe("L2PublicResolver", () => {
 
             // record of the owned node should be changed
             expect(await l2PublicResolver.text(user1.address, node, "network.dm3.profile")).to.equal("test");
+        });
+        it("delegate can set text record context if approved", async () => {
+            const name = "subname.parent.eth";
+            const node = ethers.utils.namehash(name);
+            const context = user1.address;
+            const record = "test";
+            const value = "my-delegated-value";
+            try {
+                await l2PublicResolver.connect(user2).setTextFor(context, dnsEncode(name), record, "test");
+            } catch (e) {
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver.text(context, node, record)).to.equal("");
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver.connect(user2).setTextFor(context, dnsEncode(name), record, value);
+            const receipt = await tx.wait();
+            const [addressChangedEvent] = receipt.events;
+            const [eventContext] = addressChangedEvent.args;
+
+            expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
+            expect(await l2PublicResolver.text(user1.address, node, record)).to.equal(value);
         });
     });
 
@@ -134,7 +159,28 @@ describe("L2PublicResolver", () => {
 
             expect(encodedBtcAddress).to.equal(btcAddress);
         });
+        it("delegate can set addr record context if approved", async () => {
+            const name = "subname.parent.eth";
+            const node = ethers.utils.namehash(name);
+            const context = user1.address;
+            try {
+                await l2PublicResolver.connect(user2)["setAddrFor(bytes,bytes,address)"](context, dnsEncode(name), user2.address);
+            } catch (e) {
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver["addr(bytes,bytes32)"](context, node)).to.equal("0x0000000000000000000000000000000000000000");
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver.connect(user2)["setAddrFor(bytes,bytes,address)"](context, dnsEncode(name), user2.address);
+            const receipt = await tx.wait();
+            const [addressChangedEvent] = receipt.events;
+            let [eventContext] = addressChangedEvent.args;
+            expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
+            expect(await l2PublicResolver["addr(bytes,bytes32)"](user1.address, node)).to.equal(user2.address);
+        });
     });
+
     describe("ABIResolver", () => {
         it("set abi record on L2", async () => {
             const name = "dm3.eth";
@@ -152,6 +198,36 @@ describe("L2PublicResolver", () => {
             expect(eventName).to.equal(dnsEncode(name));
             expect(eventNode).to.equal(node);
             expect(eventContentType.toNumber()).to.equal(1);
+
+            const [actualContentType, actualAbi] = await l2PublicResolver.ABI(user1.address, node, 1);
+
+            expect(actualContentType.toNumber()).to.equal(1);
+            expect(Buffer.from(actualAbi.slice(2), "hex").toString()).to.equal(abi.toString());
+        });
+        it("delegate can set abi record context if approved", async () => {
+            const name = "subname.parent.eth";
+            const node = ethers.utils.namehash(name);
+            const context = user1.address;
+            const abi = l2PublicResolver.interface.format(ethers.utils.FormatTypes.json);
+
+            try {
+                const tx = await l2PublicResolver
+                    .connect(user2)
+                    .setABIFor(context, dnsEncode(name), 1, ethers.utils.toUtf8Bytes(abi.toString()));
+            } catch (e) {
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver.ABI(context, node, 1)).to.eql([BigNumber.from(0), "0x"]);
+
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver
+                .connect(user2)
+                .setABIFor(context, dnsEncode(name), 1, ethers.utils.toUtf8Bytes(abi.toString()));
+            const receipt = await tx.wait();
+            const [addressChangedEvent] = receipt.events;
+            const [eventContext] = addressChangedEvent.args;
 
             const [actualContentType, actualAbi] = await l2PublicResolver.ABI(user1.address, node, 1);
 
@@ -181,6 +257,28 @@ describe("L2PublicResolver", () => {
 
             expect(actualContentHash).to.equal(contentHash);
         });
+        it("delegate can set contentHash record context if approved", async () => {
+            const name = "subname.parent.eth";
+            const node = ethers.utils.namehash(name);
+            const context = user1.address;
+            const contentHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("test"));
+            try {
+                await l2PublicResolver.connect(user2).setContenthashFor(context, dnsEncode(name), contentHash);
+            } catch (e) {
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver.contenthash(context, node)).to.equal("0x");
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver.connect(user2).setContenthashFor(context, dnsEncode(name), contentHash);
+            const receipt = await tx.wait();
+            const [addressChangedEvent] = receipt.events;
+            const [eventContext] = addressChangedEvent.args;
+
+            expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
+            expect(await l2PublicResolver.contenthash(user1.address, node)).to.equal(contentHash);
+        });
     });
     describe("DNS", () => {
         it("set DNS record on L2", async () => {
@@ -194,6 +292,32 @@ describe("L2PublicResolver", () => {
             const [eventContext, eventNode] = dnsRecordChangedEvent.args;
             expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
             expect(eventNode).to.equal(node);
+
+            const actualValue = await l2PublicResolver.dnsRecord(user1.address, node, keccak256("0x" + record.substring(0, 30)), 1);
+
+            expect(actualValue).to.equal("0x" + record);
+        });
+        it("delegate can set DNS record context if approved", async () => {
+            const name = "subname.parent.eth";
+            const node = ethers.utils.namehash(name);
+            const context = user1.address;
+            const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
+            try {
+                await l2PublicResolver.connect(user2).setDNSRecordsFor(context, dnsEncode(name), "0x" + record);
+                console.log("should not be here");
+            } catch (e) {
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver.dnsRecord(context, node, keccak256("0x" + record.substring(0, 30)), 1)).to.equal("0x");
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver.connect(user2).setDNSRecordsFor(context, dnsEncode(name), "0x" + record);
+            const receipt = await tx.wait();
+            const [delegateChangedEvent] = receipt.events;
+            const [eventContext] = delegateChangedEvent.args;
+
+            expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
 
             const actualValue = await l2PublicResolver.dnsRecord(user1.address, node, keccak256("0x" + record.substring(0, 30)), 1);
 
@@ -217,28 +341,31 @@ describe("L2PublicResolver", () => {
 
             expect(actualValue).to.equal(keccak256(toUtf8Bytes("foo")));
         });
-    });
-
-    describe("Name", () => {
-        it("set name on L2", async () => {
-            const name = "dm3.eth";
+        it("delegate can set zonehash context if approved", async () => {
+            const name = "subname.parent.eth";
             const node = ethers.utils.namehash(name);
-
-            const tx = await l2PublicResolver.connect(user1).setName(dnsEncode(name), "foo");
-
+            const context = user1.address;
+            const record = dnsWireFormat("a.example.com", 3600, 1, 1, "");
+            try {
+                await l2PublicResolver.connect(user2).setZonehashFor(context, dnsEncode(name), keccak256(toUtf8Bytes("foo")));
+                console.log("should not be here");
+            } catch (e) {
+                expect(e.message).to.include("Not authorised");
+            }
+            // record should be empty
+            expect(await l2PublicResolver.zonehash(context, node)).to.equal("0x");
+            const tx0 = await l2PublicResolver.connect(user1)["approve(bytes,address,bool)"](dnsEncode(name), user2.address, true);
+            await tx0.wait();
+            const tx = await l2PublicResolver.connect(user2).setZonehashFor(context, dnsEncode(name), keccak256(toUtf8Bytes("foo")));
             const receipt = await tx.wait();
-            const [nameChangedEvent] = receipt.events;
-
-            const [eventContext, eventName, eventNode, eventNewName] = nameChangedEvent.args;
+            const [delegateChangedEvent] = receipt.events;
+            const [eventContext] = delegateChangedEvent.args;
 
             expect(ethers.utils.getAddress(eventContext)).to.equal(user1.address);
-            expect(eventName).to.equal(dnsEncode(name));
-            expect(eventNode).to.equal(node);
-            expect(eventNewName).to.equal("foo");
 
-            const actualName = await l2PublicResolver.name(user1.address, node);
+            const actualValue = await l2PublicResolver.zonehash(user1.address, node);
 
-            expect(actualName).to.equal("foo");
+            expect(actualValue).to.equal(keccak256(toUtf8Bytes("foo")));
         });
     });
 });

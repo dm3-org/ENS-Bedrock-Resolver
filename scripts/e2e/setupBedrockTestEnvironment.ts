@@ -125,7 +125,6 @@ const setupBedrockTestEnvironment = async () => {
     foreignResolver = await new L2PublicResolver__factory().connect(l2Whale).deploy();
     console.log(`L2 Foreign resolver deployed at ${foreignResolver.address}`);
 
-
     bedrockProofVerifier = await new BedrockProofVerifier__factory().connect(l1Whale).deploy("0x6900000000000000000000000000000000000000");
     console.log(`BedrockProofVerifier deployed at ${bedrockProofVerifier.address}`);
 
@@ -134,8 +133,6 @@ const setupBedrockTestEnvironment = async () => {
         .deploy(whale.address, "localhost:8000/graphql", "", 420, bedrockProofVerifier.address, l2PublicResolver.address);
 
     console.log(`BedrockCcipVerifier deployed at ${l2PublicResolverVerifier.address}`);
-
-
 
     ccipResolver = await new ERC3668Resolver__factory()
         .connect(l1Whale)
@@ -148,7 +145,6 @@ const setupBedrockTestEnvironment = async () => {
                 gasLimit: 10000000,
             }
         );
-
 
     console.log(`CcipResolver deployed at ${ccipResolver.address}`);
 
@@ -166,7 +162,6 @@ const setupBedrockTestEnvironment = async () => {
 
     await ccipResolverTx.wait();
 
-
     console.log(`${alice.address} funded with ${await l2Provider.getBalance(alice.address)}`);
     console.log(`${bob.address} funded with ${await l2Provider.getBalance(bob.address)}`);
 
@@ -178,9 +173,9 @@ const setupBedrockTestEnvironment = async () => {
         const recordName = "foo";
         const value = "bar";
         await l2PublicResolver.connect(alice.connect(l2Provider)).setText(name, recordName, value),
-        {
-            gasLimit: 1000000,
-        };
+            {
+                gasLimit: 1000000,
+            };
     };
 
     //Prepare test 31 byte
@@ -230,9 +225,9 @@ const setupBedrockTestEnvironment = async () => {
         const decodedBtcAddress = cointypeInstance.decoder(btcAddress);
         const tx = await l2PublicResolver
             .connect(alice.connect(l2Provider))
-        ["setAddr(bytes,uint256,bytes)"](name, btcCoinType, decodedBtcAddress, {
-            gasLimit: 1000000,
-        });
+            ["setAddr(bytes,uint256,bytes)"](name, btcCoinType, decodedBtcAddress, {
+                gasLimit: 1000000,
+            });
         await tx.wait();
     };
     const prepareSetAbi = async () => {
@@ -293,8 +288,6 @@ const setupBedrockTestEnvironment = async () => {
             gasLimit: 1000000,
         });
         await tx.wait();
-
-
     };
     const prepareTestSubdomain2 = async () => {
         const name = dnsEncode("alice.eth");
@@ -306,7 +299,6 @@ const setupBedrockTestEnvironment = async () => {
             gasLimit: 1000000,
         });
         await tx.wait();
-
     };
     const nameWrapperProfile = async () => {
         const name = dnsEncode("namewrapper.alice.eth");
@@ -317,7 +309,6 @@ const setupBedrockTestEnvironment = async () => {
             gasLimit: 1000000,
         });
         await tx.wait();
-
     };
     //Prepare foreign resolver
     const prepareForeign = async () => {

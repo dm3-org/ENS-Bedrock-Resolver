@@ -75,6 +75,7 @@ module.exports = {
                 viaIR: true,
                 optimizer: {
                     enabled: true,
+                    runs: 100000,
                     details: {
                         yulDetails: {
                             optimizerSteps: "u",
