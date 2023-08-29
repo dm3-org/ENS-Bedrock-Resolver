@@ -40,23 +40,7 @@ describe("EnsHandler", () => {
             expect(ethers.utils.getAddress(slotValue.substring(0, 42))).to.eq(alice.address);
         });
     });
-    describe("Name", () => {
-        it("resolves name", async () => {
-            const name = ethers.utils.dnsEncode("alice.eth");
-            const dnsName = ethers.utils.dnsEncode(name);
-            const node = ethers.utils.namehash(name);
-
-            await l2PublicResolver.connect(alice).setName(dnsName, "alice");
-            const ccipRequest = getCcipRequest("name", name, alice.address, node);
-
-            const res = await request(expressApp).get(`/${ethers.constants.AddressZero}/${ccipRequest}`).send();
-            const { slot, target } = res.body;
-
-            const slotValue = await ethers.provider.getStorageAt(target, slot);
-
-            expect(ethers.utils.toUtf8String(slotValue.substring(0, 12))).to.equal("alice");
-        });
-    });
+ 
     describe("Text", () => {
         it("resolves text", async () => {
             const name = ethers.utils.dnsEncode("alice.eth");

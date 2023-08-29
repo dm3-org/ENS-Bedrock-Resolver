@@ -96,16 +96,6 @@ describe("E2E Test", () => {
             expect(Buffer.from(actualAbi.slice(2), "hex").toString()).to.equal(expectedAbi);
         });
 
-        it("ccip gateway resolves existing name ", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
-
-            const iface = new ethers.utils.Interface(["function name(bytes32 node) external view returns (string memory)"]);
-            const sig = iface.encodeFunctionData("name", [ethers.utils.namehash("alice.eth")]);
-
-            const [response] = iface.decodeFunctionResult("name", await resolver._fetch(sig));
-
-            expect(response).to.equal("alice");
-        });
         it("ccip gateway resolves dnsRecord ", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", "alice.eth");
 

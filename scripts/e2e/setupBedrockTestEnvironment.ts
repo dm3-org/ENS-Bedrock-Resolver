@@ -130,7 +130,7 @@ const setupBedrockTestEnvironment = async () => {
 
     l2PublicResolverVerifier = await new L2PublicResolverVerifier__factory()
         .connect(l1Whale)
-        .deploy(whale.address, "localhost:8000/graphql", bedrockProofVerifier.address, l2PublicResolver.address);
+        .deploy(whale.address, "localhost:8000/graphql", "", 420, bedrockProofVerifier.address, l2PublicResolver.address);
 
     console.log(`BedrockCcipVerifier deployed at ${l2PublicResolverVerifier.address}`);
 
@@ -249,16 +249,6 @@ const setupBedrockTestEnvironment = async () => {
                 gasLimit: 1000000,
             });
     };
-    const prepareSetName = async () => {
-        const nodeName = dnsEncode("alice.eth");
-        const name = "alice";
-
-        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setName(nodeName, name, {
-            gasLimit: 1000000,
-        });
-        await tx.wait();
-    };
-
     const prepareSetDNS = async () => {
         const nodeName = dnsEncode("alice.eth");
 
@@ -324,7 +314,6 @@ const setupBedrockTestEnvironment = async () => {
     await prepareSetblockchainAddr();
     await prepareSetAbi();
     await prepareSetContentHash();
-    await prepareSetName();
     await prepareSetDNS();
     await prepareSetZonehash();
     await prepareTestSubdomain();
