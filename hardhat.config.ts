@@ -34,7 +34,10 @@ module.exports = {
             url: GOERLI_URL,
             accounts: [DEPLOYER_PRIVATE_KEY],
         },
-        localhost: {},
+        localhost: {
+            url: 'http://localhost:8545',
+            accounts: [DEPLOYER_PRIVATE_KEY],
+        },
 
     },
     etherscan: {
