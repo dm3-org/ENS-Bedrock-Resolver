@@ -7,12 +7,12 @@ services:
       L2_RESOLVER_ADDRESS: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
 
   ccip-resolver:
-    image: dm3org/ccip-resolver:v0.2.0
+    image: ccip-resolver:latest
     restart: always
     environment:
       CONFIG: |
         {
-          "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9": {
+          "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9": {
             "type": "optimism-bedrock",
             "handlerUrl": "http://ens-data-source:8887",
             "l1ProviderUrl": "http://host.docker.internal:8545",

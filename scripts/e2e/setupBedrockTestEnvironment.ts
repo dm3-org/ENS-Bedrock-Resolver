@@ -69,6 +69,11 @@ const setupBedrockTestEnvironment = async () => {
         to: alice.address,
         value: ethers.utils.parseEther("100"),
     });
+    //fund bobs accoun
+    const fundbobL1Tx = await l1Whale.sendTransaction({
+        to: bob.address,
+        value: ethers.utils.parseEther("100"),
+    });
     const fundAlicel2Tx = await l2Whale.sendTransaction({
         to: alice.address,
         value: ethers.utils.parseEther("100"),
@@ -85,9 +90,11 @@ const setupBedrockTestEnvironment = async () => {
     console.log("Funded accounts");
     console.log("Alice L1 balance", ethers.utils.formatEther(await l1Provider.getBalance(alice.address)));
     console.log("Alice L2 balance", ethers.utils.formatEther(await l2Provider.getBalance(alice.address)));
+    console.log("Bob L1 balance", ethers.utils.formatEther(await l1Provider.getBalance(bob.address)));
     console.log("Bob L2 balance", ethers.utils.formatEther(await l2Provider.getBalance(bob.address)));
 
     const l1Alice = alice.connect(l1Provider);
+    const l1Bob = bob.connect(l1Provider);
     /**
      * ///////////////////////////////////////////////////////////////
      * MOCK ENS REGISTRY
@@ -113,6 +120,16 @@ const setupBedrockTestEnvironment = async () => {
         .setSubnodeOwner(ethers.utils.namehash("alice.eth"), ethers.utils.keccak256(ethers.utils.toUtf8Bytes("a")), l1Alice.address, {
             gasLimit: 500000,
         });
+
+    const reqTx = await ensRegistry
+        .connect(l1Alice)
+        .setSubnodeOwner(ethers.utils.namehash("eth"), ethers.utils.keccak256(ethers.utils.toUtf8Bytes("bob")), bob.address, {
+            gasLimit: 500000,
+        });
+
+    await reqTx.wait()
+
+    console.log("reg tx done")
 
     /**
      * ///////////////////////////////////////////////////////////////
@@ -156,11 +173,23 @@ const setupBedrockTestEnvironment = async () => {
             l2PublicResolverVerifier.address,
             ["http://localhost:8081/{sender}/{data}"],
             {
-                gasLimit: 1000000,
+                gasLimit: 3000000,
             }
         );
 
     await ccipResolverTx.wait();
+    const bobResolverTx = await ccipResolver
+        .connect(l1Bob)
+        .setVerifierForDomain(
+            ethers.utils.namehash("bob.eth"),
+            l2PublicResolverVerifier.address,
+            ["http://localhost:8081/{sender}/{data}"],
+            {
+                gasLimit: 3000000,
+            }
+        );
+
+    await bobResolverTx.wait();
 
     console.log(`${alice.address} funded with ${await l2Provider.getBalance(alice.address)}`);
     console.log(`${bob.address} funded with ${await l2Provider.getBalance(bob.address)}`);
@@ -173,9 +202,22 @@ const setupBedrockTestEnvironment = async () => {
         const recordName = "foo";
         const value = "bar";
         await l2PublicResolver.connect(alice.connect(l2Provider)).setText(name, recordName, value),
-            {
-                gasLimit: 1000000,
-            };
+        {
+            gasLimit: 1000000,
+        };
+    };
+    const prepareTestVersion = async () => {
+        //Prepare test single slot
+        const name = dnsEncode("bob.eth");
+
+        const recordName = "vRec";
+        const value = "my-version";
+        await l2PublicResolver.connect(bob.connect(l2Provider)).clearRecords(name),
+            await l2PublicResolver.connect(bob.connect(l2Provider)).setText(name, recordName, value),
+        {
+            gasLimit: 1000000,
+        };
+        console.log("bob set up")
     };
 
     //Prepare test 31 byte
@@ -225,9 +267,9 @@ const setupBedrockTestEnvironment = async () => {
         const decodedBtcAddress = cointypeInstance.decoder(btcAddress);
         const tx = await l2PublicResolver
             .connect(alice.connect(l2Provider))
-            ["setAddr(bytes,uint256,bytes)"](name, btcCoinType, decodedBtcAddress, {
-                gasLimit: 1000000,
-            });
+        ["setAddr(bytes,uint256,bytes)"](name, btcCoinType, decodedBtcAddress, {
+            gasLimit: 1000000,
+        });
         await tx.wait();
     };
     const prepareSetAbi = async () => {
@@ -320,6 +362,7 @@ const setupBedrockTestEnvironment = async () => {
     await prepareTestSubdomain2();
     await nameWrapperProfile();
     await prepareForeign();
+    await prepareTestVersion()
     console.log("Environment setup complete wait a few minutes until everything is set");
 };
 setupBedrockTestEnvironment();

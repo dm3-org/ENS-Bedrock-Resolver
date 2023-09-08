@@ -384,7 +384,7 @@
     bufio "^1.0.7"
     chai "^4.3.4"
 
-"@eth-optimism/core-utils@^0.12.0", "@eth-optimism/core-utils@^0.12.1":
+"@eth-optimism/core-utils@^0.12.0":
   version "0.12.1"
   resolved "https://registry.yarnpkg.com/@eth-optimism/core-utils/-/core-utils-0.12.1.tgz#2d65601e220d1b697eb9b9fe9c1d2df06c1f559a"
   integrity sha512-H2NnH9HTVDJmr9Yzb5R7GrAaYimcyIY4bF5Oud0xM1/DP4pSoNMtWm1kG3ZBpdqHFFYWH9GiSZZC5/cjFdKBEA==
@@ -401,6 +401,26 @@
     "@ethersproject/rlp" "^5.7.0"
     "@ethersproject/web" "^5.7.0"
     chai "^4.3.4"
+
+"@eth-optimism/core-utils@^0.12.1":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@eth-optimism/core-utils/-/core-utils-0.12.3.tgz#7799292ee2155d6f5dd67e2ee58e4a1fbcfd87d4"
+  integrity sha512-NzHai4HCWbHbnuu4HJaDhT8aGGZXyrKqgteHGhOPKGHRl3DTuuisD/baFq1XVck6X0iHjDihQOLuygtxkdL19A==
+  dependencies:
+    "@ethersproject/abi" "^5.7.0"
+    "@ethersproject/abstract-provider" "^5.7.0"
+    "@ethersproject/address" "^5.7.0"
+    "@ethersproject/bignumber" "^5.7.0"
+    "@ethersproject/bytes" "^5.7.0"
+    "@ethersproject/constants" "^5.7.0"
+    "@ethersproject/contracts" "^5.7.0"
+    "@ethersproject/keccak256" "^5.7.0"
+    "@ethersproject/properties" "^5.7.0"
+    "@ethersproject/rlp" "^5.7.0"
+    "@ethersproject/web" "^5.7.1"
+    chai "^4.3.7"
+    ethers "^5.7.2"
+    node-fetch "^2.6.7"
 
 "@eth-optimism/sdk@^2.0.2":
   version "2.1.0"
@@ -766,7 +786,7 @@
     "@ethersproject/transactions" "^5.7.0"
     "@ethersproject/wordlists" "^5.7.0"
 
-"@ethersproject/web@5.7.1", "@ethersproject/web@^5.7.0":
+"@ethersproject/web@5.7.1", "@ethersproject/web@^5.7.0", "@ethersproject/web@^5.7.1":
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/@ethersproject/web/-/web-5.7.1.tgz#de1f285b373149bee5928f4eb7bcb87ee5fbb4ae"
   integrity sha512-Gueu8lSvyjBWL4cYsWsjh6MtMwM0+H4HvqFPZfB6dV8ctbP9zFAO73VG1cMWae0FLPCtz0peKPpZY8/ugJJX2w==
@@ -2313,9 +2333,9 @@ axios@^0.21.1:
     follow-redirects "^1.14.0"
 
 axios@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.4.0.tgz#38a7bf1224cd308de271146038b551d725f0be1f"
-  integrity sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.5.0.tgz#f02e4af823e2e46a9768cfc74691fdd0517ea267"
+  integrity sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
@@ -2822,10 +2842,10 @@ cbor@^8.1.0:
   dependencies:
     nofilter "^3.1.0"
 
-ccip-resolver@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/ccip-resolver/-/ccip-resolver-0.2.1.tgz#9ce27cb43473462ed7c376e5ef800a83a347a99a"
-  integrity sha512-Ih2/Q99pscPO7OUmmgrnbeIdd7Xbu46Yls+W/8Hvyxg1AiOVO45rWan8iblxYCkx5gB3K/W7T6bMYUGLZo1FeQ==
+ccip-resolver@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/ccip-resolver/-/ccip-resolver-0.2.4.tgz#c115d7bf582209f46a5ec40eb50ac341ffa2c68e"
+  integrity sha512-iZQEXesYoPetHNE+uQ8dw83/ijqmN5yz0Ra4pBlC4XyTQAcARDtg/g6cwSpbz5yBTiUQfbYF72HBpYFK3haRvg==
   dependencies:
     "@defi-wonderland/smock" "^2.3.4"
     "@ensdomains/buffer" "0.0.10"
@@ -2836,7 +2856,6 @@ ccip-resolver@0.2.1:
     "@eth-optimism/sdk" "^2.0.2"
     axios "^1.4.0"
     body-parser "^1.20.2"
-    ens-contracts-legacy "https://github.com/ensdomains/resolvers.git#v0.1.7"
     express "^4.18.2"
     solidity-bytes-utils "^0.8.0"
     winston "^3.9.0"
@@ -2862,6 +2881,19 @@ chai@^4.2.0, chai@^4.3.4:
   version "4.3.7"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.7.tgz#ec63f6df01829088e8bf55fca839bcd464a8ec51"
   integrity sha512-HLnAzZ2iupm25PlN0xFreAlBA5zaBSv3og0DdeGA4Ar6h6rJ3A0rolRUKJhSF2V10GZKDgWF/VmAEsNWjCRB+A==
+  dependencies:
+    assertion-error "^1.1.0"
+    check-error "^1.0.2"
+    deep-eql "^4.1.2"
+    get-func-name "^2.0.0"
+    loupe "^2.3.1"
+    pathval "^1.1.1"
+    type-detect "^4.0.5"
+
+chai@^4.3.7:
+  version "4.3.8"
+  resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.8.tgz#40c59718ad6928da6629c70496fe990b2bb5b17c"
+  integrity sha512-vX4YvVVtxlfSZ2VecZgFUTU5qPCYsobVI2O9FmwEXBhDigYGQA6jRXCycIs1yJnnWbZ6/+a2zNIF5DfVCcJBFQ==
   dependencies:
     assertion-error "^1.1.0"
     check-error "^1.0.2"
@@ -3755,10 +3787,6 @@ enquirer@^2.3.0, enquirer@^2.3.6:
   dependencies:
     ansi-colors "^4.1.1"
 
-"ens-contracts-legacy@https://github.com/ensdomains/resolvers.git#v0.1.7":
-  version "0.1.7"
-  resolved "https://github.com/ensdomains/resolvers.git#899fee8c85fd60ebe04855f0991da3d796ff6081"
-
 entities@^4.2.0, entities@^4.4.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-4.5.0.tgz#5d268ea5e7113ec74c4d033b79ea5a35a488fb48"
@@ -4295,7 +4323,7 @@ ethers@^4.0.0-beta.1, ethers@^4.0.32:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^5.0.0, ethers@^5.0.13, ethers@^5.5.2, ethers@^5.6.1, ethers@^5.7.0, ethers@^5.7.1:
+ethers@^5.0.0, ethers@^5.0.13, ethers@^5.5.2, ethers@^5.6.1, ethers@^5.7.0, ethers@^5.7.1, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
