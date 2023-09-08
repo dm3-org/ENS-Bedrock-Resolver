@@ -6,8 +6,8 @@ Decodes the call data of addr(bytes 32)
 @returns An object containing the name.
 @throws An error if the namehash doesn't match the ENS name.
 */
-export function decodeAddr(context: string, data: ethers.utils.Result) {
+export function decodeAddr(data: ethers.utils.Result) {
     const node = data.node;
     const coinType = data.coinType;
-    return { node, context, coinType };
+    return { node, coinType };
 }

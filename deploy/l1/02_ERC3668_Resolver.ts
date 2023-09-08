@@ -17,17 +17,26 @@ async function main() {
 
     const namewrapper = NAMEWRAPPER_GOERLI;
     console.log({ENS_REGISTRY, namewrapper, DEFAULT_VERIFIER_ADDRESS, DEFAULT_VERIFIER_URL})
+    console.log({deployer})
     const deployTx = await
         new ERC3668Resolver__factory()
             .connect(deployer)
             .deploy(
                 ENS_REGISTRY, namewrapper, DEFAULT_VERIFIER_ADDRESS, [DEFAULT_VERIFIER_URL],
-                {gasLimit: 5000000}
+                {
+                    // gasLimit: 30000000,
+                    // gasPrice: "90000000"
+                }
             );
 
     await deployTx.deployed();
 
     console.log('ERC3668Resolver deployed to:', deployTx.address);
+    console.log(
+        `Verify the contract using  npx hardhat verify --network ${hre.network.name} ${deployTx.address}
+        ${ENS_REGISTRY} ${namewrapper} ${DEFAULT_VERIFIER_ADDRESS} ${DEFAULT_VERIFIER_URL}`
+    );
+
     console.log(`Run export ERC3668_RESOLVER_ADDRESS=${deployTx.address}`)
 }
 

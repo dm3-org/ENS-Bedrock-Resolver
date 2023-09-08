@@ -1,5 +1,8 @@
 import express from 'express';
-import { L2PublicResolver, L2PublicResolver__factory } from "../../typechain";
+// import { L2PublicResolver, L2PublicResolver__factory } from "../../typechain";
+import { OwnedResolver  } from "../../typechain/contracts/resolvers";
+import { OwnedResolver__factory } from "../../typechain/factories/contracts/resolvers";
+
 import { handleBedrockCcipRequest } from "./handleBedrockCcipRequest";
 import { ethers } from 'ethers';
 
@@ -8,9 +11,9 @@ export function EnsBedrockHandler(provider: ethers.providers.StaticJsonRpcProvid
 
     const l2PublicResolver = new ethers.Contract(
         l2ResolverAddress,
-        L2PublicResolver__factory.createInterface(),
+        OwnedResolver__factory.createInterface(),
         provider
-    ) as L2PublicResolver
+    ) as OwnedResolver
 
     router.get(
         '/:resolverAddr/:calldata',

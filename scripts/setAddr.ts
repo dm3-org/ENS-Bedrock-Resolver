@@ -12,8 +12,8 @@ export async function setAddr() {
     const L2PublicResolver = L2PublicResolverFactory.attach(l2ResolverAddress);
 
     const tx = await L2PublicResolver["setAddr(bytes,address)"](dnsEncode(ENS_NAME), signer.address, {
-        gasPrice: "900000",
-        gasLimit: 500000,
+        // gasPrice: "900000",
+        // gasLimit: 500000,
     });
     const rec = await tx.wait();
 

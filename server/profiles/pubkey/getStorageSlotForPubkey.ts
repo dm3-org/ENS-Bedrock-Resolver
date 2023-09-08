@@ -3,7 +3,7 @@ import { L2PublicResolver } from "../../../typechain";
 
 export async function getSlotForPubkeyX(l2PublicResolver: L2PublicResolver, context: string, node: string,): Promise<string> {
     //The storage slot within the particular contract
-    const PUBKEY_SLOT_NAME = 9;
+    const PUBKEY_SLOT_NAME = 8;
 
     const version = await l2PublicResolver.recordVersions(context, node);
     return getStorageSlotForPubkey(PUBKEY_SLOT_NAME, version.toNumber(), context, node)
