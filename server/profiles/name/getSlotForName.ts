@@ -3,7 +3,7 @@ import { L2PublicResolver } from "../../../typechain";
 
 export async function getSlotForName(l2PublicResolver: L2PublicResolver, context: string, node: string): Promise<string> {
     //The storage slot within the particular contract
-    const NAME_SLOT_NAME = 8;
+    const NAME_SLOT_NAME = 7;
     const version = await l2PublicResolver.recordVersions(context, node);
     return getStorageSlotForName(NAME_SLOT_NAME, version.toNumber(), context, node);
 }

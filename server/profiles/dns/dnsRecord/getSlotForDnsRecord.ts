@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { L2PublicResolver } from "../../../../typechain";
 export async function getSlotForDnsRecord(l2PublicResolver: L2PublicResolver, context: string, node: string, name: string, resource: string): Promise<string> {
     //The storage slot within the particular contract
-    const NAME_SLOT_NAME = 6;
+    const NAME_SLOT_NAME = 5;
     const version = await l2PublicResolver.recordVersions(context, node);
     return getStorageSlotForDnsRecord(NAME_SLOT_NAME, version.toNumber(), context, node, name, resource);
 }
