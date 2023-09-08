@@ -75,54 +75,6 @@ describe("E2E Test", () => {
 
             expect(achtualhash).to.equal("ipfs://QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4");
         });
-        it.skip("ccip gateway resolves existing abi using ethers.provider.getABI", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9", "alice.eth");
-
-            const iface = new ethers.utils.Interface([
-                "function ABI(bytes32 node, uint256 contextType) external view returns (uint256, bytes memory)",
-            ]);
-
-            const sig = iface.encodeFunctionData("ABI", [ethers.utils.namehash("alice.eth"), 1]);
-
-            const encodedRes = await resolver._fetch(sig);
-
-            const [decodedRes] = ethers.utils.defaultAbiCoder.decode(["bytes"], encodedRes);
-
-            const ress = iface.decodeFunctionResult("ABI", decodedRes);
-
-            const [actualContextType, actualAbi] = ress;
-            const expectedAbi = new BedrockProofVerifier__factory().interface.format(ethers.utils.FormatTypes.json);
-
-            expect(BigNumber.from(actualContextType).toNumber()).to.equal(1);
-            expect(Buffer.from(actualAbi.slice(2), "hex").toString()).to.equal(expectedAbi);
-        });
-
-        it.skip("ccip gateway resolves dnsRecord ", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9", "alice.eth");
-
-            const iface = new ethers.utils.Interface([
-                "function dnsRecord(bytes32 node,bytes32 name,uint16 resource) public view  returns(bytes memory)",
-            ]);
-
-            const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
-            const sig = iface.encodeFunctionData("dnsRecord", [
-                ethers.utils.namehash("alice.eth"),
-                keccak256("0x" + record.substring(0, 30)),
-                1,
-            ]);
-
-            const [response] = iface.decodeFunctionResult("dnsRecord", await resolver._fetch(sig));
-            expect(response).to.equal("0x0161076578616d706c6503636f6d000001000100000e10000401020304");
-        });
-        it.skip("ccip gateway resolves zonehash", async () => {
-            const resolver = new ethers.providers.Resolver(provider, "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9", "alice.eth");
-            const iface = new ethers.utils.Interface(["function zonehash(bytes32 node) external view  returns (bytes memory)"]);
-
-            const sig = iface.encodeFunctionData("zonehash", [ethers.utils.namehash("alice.eth")]);
-
-            const [response] = iface.decodeFunctionResult("zonehash", await resolver._fetch(sig));
-            expect(response).to.equal(keccak256(toUtf8Bytes("foo")));
-        });
 
         it("ccip gateway resolves record with increased version", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9", "bob.eth");

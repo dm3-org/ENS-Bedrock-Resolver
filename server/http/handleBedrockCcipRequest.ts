@@ -33,7 +33,6 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                     const result = await l2PubicResolver.text(context, node, record)
 
 
-                    console.log("version slot ", versionSlot)
                     const res = [
                         {
                             slot: versionSlot,
@@ -48,7 +47,6 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                             result: l2Resolverinterface.encodeFunctionResult("text(bytes32,string)", [result])
                         }
                     ]
-                    console.log("res ", res)
                     return res
                 }
             case "addr(bytes32)":

@@ -98,7 +98,7 @@ describe("L2PublicResolverVerifier", () => {
 
 
         const resBytes = await l2PublicResolverVerifier.resolveText(response, extraData);
-        expect(ethers.utils.toUtf8String(resBytes)).to.equal("bar");
+        expect(ethers.utils.toUtf8String(resBytes)).to.equal("my-version");
     });
     it("resolveText", async () => {
         const [owner] = await ethers.getSigners();

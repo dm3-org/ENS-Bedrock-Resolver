@@ -1,25 +1,25 @@
 services:
-  ens-data-source:
-    image: ens-bedrock-resolver:latest
-    restart: always
-    environment:
-      L2_PROVIDER_URL: "http://host.docker.internal:9545"
-      L2_RESOLVER_ADDRESS: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+    ens-data-source:
+        image: ens-bedrock-resolver:latest
+        restart: always
+        environment:
+            L2_PROVIDER_URL: "http://host.docker.internal:9545"
+            L2_RESOLVER_ADDRESS: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
 
-  ccip-resolver:
-    image: ccip-resolver:latest
-    restart: always
-    environment:
-      CONFIG: |
-        {
-          "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9": {
-            "type": "optimism-bedrock",
-            "handlerUrl": "http://ens-data-source:8887",
-            "l1ProviderUrl": "http://host.docker.internal:8545",
-            "l2ProviderUrl": "http://host.docker.internal:9545",
-            "l1chainId": "900",
-            "l2chainId": "901"
-          }
-        }
-    ports:
-      - "8081:8081"
+    ccip-resolver:
+        image: dm3org/ccip-resolver:v0.2.7
+        restart: always
+        environment:
+            CONFIG: |
+                {
+                  "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9": {
+                    "type": "optimism-bedrock",
+                    "handlerUrl": "http://ens-data-source:8887",
+                    "l1ProviderUrl": "http://host.docker.internal:8545",
+                    "l2ProviderUrl": "http://host.docker.internal:9545",
+                    "l1chainId": "900",
+                    "l2chainId": "901"
+                  }
+                }
+        ports:
+            - "8081:8081"

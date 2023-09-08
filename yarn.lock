@@ -2842,10 +2842,10 @@ cbor@^8.1.0:
   dependencies:
     nofilter "^3.1.0"
 
-ccip-resolver@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/ccip-resolver/-/ccip-resolver-0.2.4.tgz#c115d7bf582209f46a5ec40eb50ac341ffa2c68e"
-  integrity sha512-iZQEXesYoPetHNE+uQ8dw83/ijqmN5yz0Ra4pBlC4XyTQAcARDtg/g6cwSpbz5yBTiUQfbYF72HBpYFK3haRvg==
+ccip-resolver@^0.2.7:
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/ccip-resolver/-/ccip-resolver-0.2.7.tgz#649c283e8b931ec16dbcf6598a63fbb78de95da8"
+  integrity sha512-gLE1px74EOsZukvjLozSPNbHOjkXE+gFLDFe2TNf2RJqy2LrO4PNgwvY58ydxVVYWRmEoURkTV3zNDF8TTh1zw==
   dependencies:
     "@defi-wonderland/smock" "^2.3.4"
     "@ensdomains/buffer" "0.0.10"
