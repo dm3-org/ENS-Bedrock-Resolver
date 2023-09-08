@@ -12,7 +12,7 @@ import { ethers as hreEthers } from "hardhat";
 import { dnsWireFormat } from "../helper/encodednsWireFormat";
 const { expect } = require("chai");
 
-describe.only("E2E Test", () => {
+describe("E2E Test", () => {
     const provider = new ethers.providers.StaticJsonRpcProvider("http://localhost:8545", {
         name: "optimismGoerli",
         chainId: 900,
@@ -37,7 +37,7 @@ describe.only("E2E Test", () => {
         ccipResolver = await new ERC3668Resolver__factory().attach("0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9");
     });
     describe("resolve", () => {
-        it.only("ccip gateway resolves existing profile using ethers.provider.getText()", async () => {
+        it("ccip gateway resolves existing profile using ethers.provider.getText()", async () => {
             const resolver = new ethers.providers.Resolver(provider, "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9", "alice.eth");
 
             const profile = {

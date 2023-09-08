@@ -6,7 +6,6 @@ import {AddrResolver} from "./profiles/addr/AddrResolver.sol";
 import {TextResolver} from "./profiles/text/TextResolver.sol";
 import {ABIResolver} from "./profiles/abi/ABIResolver.sol";
 import {ContentHashResolver} from "./profiles/contentHash/ContentHashResolver.sol";
-import {DNSResolver} from "./profiles/dns/DNSResolver.sol";
 
 /**
  * This contract is a fork of the ENS Public Resolver contract. Despite the PublicResolver, it has no authorized
@@ -16,7 +15,7 @@ import {DNSResolver} from "./profiles/dns/DNSResolver.sol";
  * ensure that a link between the owner and the node is established.
  @dev Find the original contract here: https://github.com/ensdomains/resolvers/blob/master/contracts/PublicResolver.sol
  */
-contract L2PublicResolver is Multicallable, AddrResolver, TextResolver, ABIResolver, ContentHashResolver, DNSResolver {
+contract L2PublicResolver is Multicallable, AddrResolver, TextResolver, ContentHashResolver {
     /**
      * A mapping of delegates. A delegate that is authorised for a context
      * for a name may make changes to the record.
@@ -84,7 +83,7 @@ contract L2PublicResolver is Multicallable, AddrResolver, TextResolver, ABIResol
      */
     function supportsInterface(
         bytes4 interfaceID
-    ) public view override(Multicallable, AddrResolver, TextResolver, ABIResolver, ContentHashResolver, DNSResolver) returns (bool) {
+    ) public view override(Multicallable, AddrResolver, TextResolver, ContentHashResolver) returns (bool) {
         return super.supportsInterface(interfaceID);
     }
 }

@@ -272,16 +272,6 @@ const setupBedrockTestEnvironment = async () => {
         });
         await tx.wait();
     };
-    const prepareSetAbi = async () => {
-        const name = dnsEncode("alice.eth");
-        const abi = bedrockProofVerifier.interface.format(ethers.utils.FormatTypes.json);
-
-        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setABI(name, 1, ethers.utils.toUtf8Bytes(abi.toString()), {
-            gasLimit: 10000000,
-        });
-
-        await tx.wait();
-    };
     const prepareSetContentHash = async () => {
         const name = dnsEncode("alice.eth");
 
@@ -291,25 +281,7 @@ const setupBedrockTestEnvironment = async () => {
                 gasLimit: 1000000,
             });
     };
-    const prepareSetDNS = async () => {
-        const nodeName = dnsEncode("alice.eth");
 
-        const record = dnsWireFormat("a.example.com", 3600, 1, 1, "1.2.3.4");
-
-        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setDNSRecords(nodeName, "0x" + record, {
-            gasLimit: 1000000,
-        });
-
-        await tx.wait();
-    };
-    const prepareSetZonehash = async () => {
-        const nodeName = dnsEncode("alice.eth");
-        const tx = await l2PublicResolver.connect(alice.connect(l2Provider)).setZonehash(nodeName, keccak256(toUtf8Bytes("foo")), {
-            gasLimit: 1000000,
-        });
-
-        await tx.wait();
-    };
 
     const prepareTestSubdomain = async () => {
         const name = dnsEncode("a.alice.eth");
@@ -354,10 +326,7 @@ const setupBedrockTestEnvironment = async () => {
     await prepeTestMultipleSlots();
     await prepareSetAddr();
     await prepareSetblockchainAddr();
-    await prepareSetAbi();
     await prepareSetContentHash();
-    await prepareSetDNS();
-    await prepareSetZonehash();
     await prepareTestSubdomain();
     await prepareTestSubdomain2();
     await nameWrapperProfile();
