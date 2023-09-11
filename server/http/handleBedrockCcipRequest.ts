@@ -40,13 +40,9 @@ export async function handleBedrockCcipRequest(l2PubicResolver: OwnedResolver, c
         switch (signature) {
             case "text(bytes32,string)":
                 {
-                    console.log('text1', {args})
                     const { node, record } = decodeText(args);
-                    console.log('text2', {node, record})
                     const slot = await getSlotForText(l2PubicResolver, node, record)
-                    console.log('text3', {slot})
                     const result = await l2PubicResolver.text(node, record)
-                    console.log('text4', {result})
                     return {
                         slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
                         result: l2Resolverinterface.encodeFunctionResult("text(bytes32,string)", [result])
@@ -72,16 +68,16 @@ export async function handleBedrockCcipRequest(l2PubicResolver: OwnedResolver, c
                     result: l2Resolverinterface.encodeFunctionResult("addr(bytes32,uint256)", [result])
                 }
             }
-            // case "ABI(bytes32,uint256)":
-            //     {
-            //         const { node, contentTypes } = args;
-            //         const [contentType, Abi] = await l2PubicResolver.ABI(context, node, contentTypes)
-            //         const slot = await getSlotForAbi(l2PubicResolver, context, node, contentType.toNumber());
-            //         return {
-            //             slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
-            //             result: ethers.utils.defaultAbiCoder.encode(["bytes"], [Abi])
-            //         }
-            // }
+            case "ABI(bytes32,uint256)":
+                {
+                    const { node, contentTypes } = args;
+                    const [contentType, Abi] = await l2PubicResolver.ABI(node, contentTypes)
+                    const slot = await getSlotForAbi(l2PubicResolver, node, contentType.toNumber());
+                    return {
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                        result: ethers.utils.defaultAbiCoder.encode(["bytes"], [Abi])
+                    }
+            }
             case "contenthash(bytes32)":
                 {
                     const { node } = args;
@@ -93,27 +89,27 @@ export async function handleBedrockCcipRequest(l2PubicResolver: OwnedResolver, c
                     }
                 }
 
-            // case "dnsRecord(bytes32,bytes32,uint16)":
-            //     {
-            //         const { node, name, resource } = decodeDNSRecord(context, args)
-            //         const slot = await getSlotForDnsRecord(l2PubicResolver, context, node, name, resource)
-            //         const result = await l2PubicResolver.dnsRecord(context, node, name, resource)
+            case "dnsRecord(bytes32,bytes32,uint16)":
+                {
+                    const { node, name, resource } = decodeDNSRecord(args)
+                    const slot = await getSlotForDnsRecord(l2PubicResolver, node, name, resource)
+                    const result = await l2PubicResolver.dnsRecord(node, name, resource)
 
-            //         return {
-            //             slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
-            //             result: l2Resolverinterface.encodeFunctionResult("dnsRecord(bytes32,bytes32,uint16)", [result])
-            //         }
-            //     }
-            // case "zonehash(bytes32)":
-            //     {
-            //         const { node } = decodeZonehash(context, args)
-            //         const slot = await getSlotForZoneHash(l2PubicResolver, context, node)
-            //         const result = await l2PubicResolver.zonehash(context, node)
-            //         return {
-            //             slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
-            //             result: l2Resolverinterface.encodeFunctionResult("zonehash(bytes32)", [result])
-            //         }
-            //     }
+                    return {
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                        result: l2Resolverinterface.encodeFunctionResult("dnsRecord(bytes32,bytes32,uint16)", [result])
+                    }
+                }
+            case "zonehash(bytes32)":
+                {
+                    const { node } = decodeZonehash(args)
+                    const slot = await getSlotForZoneHash(l2PubicResolver, node)
+                    const result = await l2PubicResolver.zonehash(node)
+                    return {
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                        result: l2Resolverinterface.encodeFunctionResult("zonehash(bytes32)", [result])
+                    }
+                }
             default:
                 //Unsupported signature
                 return null

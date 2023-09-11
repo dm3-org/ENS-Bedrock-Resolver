@@ -1,16 +1,15 @@
 import { ethers } from "ethers";
-import { L2PublicResolver } from "../../../../typechain";
+import { OwnedResolver } from "../../../typechain/contracts/resolvers";
 
-export async function getSlotForZoneHash(l2PublicResolver: L2PublicResolver, context: string, node: string,): Promise<string> {
+export async function getSlotForZoneHash(l2PublicResolver: OwnedResolver, node: string,): Promise<string> {
     //The storage slot within the particular contract
     const NAME_SLOT_NAME = 5;
-    const version = await l2PublicResolver.recordVersions(context, node);
-    return getStorageSlotForZonehash(NAME_SLOT_NAME, version.toNumber(), context, node);
+    const version = await l2PublicResolver.recordVersions(node);
+    return getStorageSlotForZonehash(NAME_SLOT_NAME, version.toNumber(), node);
 }
 
-function getStorageSlotForZonehash(slot: number, versionNumber: number, context: string, node: string,) {
+function getStorageSlotForZonehash(slot: number, versionNumber: number, node: string,) {
     const innerHash = ethers.utils.solidityKeccak256(["uint256", "uint256"], [versionNumber, slot]);
-    const contextHash = ethers.utils.solidityKeccak256(["bytes", "bytes32"], [context, innerHash]);
-    const nodeHash = ethers.utils.solidityKeccak256(["bytes32", "bytes32"], [node, contextHash]);
+    const nodeHash = ethers.utils.solidityKeccak256(["bytes32", "bytes32"], [node, innerHash]);
     return nodeHash;
 }
