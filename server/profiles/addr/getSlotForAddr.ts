@@ -9,11 +9,11 @@ export async function getSlotForAddr(l2PublicResolver: OwnedResolver, node: stri
     // 2: ABIResolver,
     // 3: AddrResolver,
     // 4: ContentHashResolver,
-    // 5: DNSResolver,
-    // 6: InterfaceResolver,
-    // 7: NameResolver,
-    // 8: PubkeyResolver,
-    // 9: TextResolver,
+    // 5,6,7: DNSResolver,
+    // 8,9: InterfaceResolver,
+    // 10: NameResolver,
+    // 11,12,13: PubkeyResolver,
+    // 14: TextResolver,
     const ADDR_SLOT_NAME = 3;
     const version = await l2PublicResolver.recordVersions(node);
     return getStorageSlotForAddr(ADDR_SLOT_NAME, version.toNumber(), node, coinType);

@@ -38,47 +38,40 @@ export async function handleBedrockCcipRequest(l2PubicResolver: OwnedResolver, c
         });
         console.log(4, {signature})
         switch (signature) {
-            // case "text(bytes32,string)":
-            //     {
-            //         const { node, record } = decodeText(context, args);
-            //         const slot = await getSlotForText(l2PubicResolver, node, record)
-            //         const result = await l2PubicResolver.text(context, node, record)
-
-            //         return {
-            //             slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
-            //             result: l2Resolverinterface.encodeFunctionResult("text(bytes32,string)", [result])
-            //         }
-            //     }
+            case "text(bytes32,string)":
+                {
+                    console.log('text1', {args})
+                    const { node, record } = decodeText(args);
+                    console.log('text2', {node, record})
+                    const slot = await getSlotForText(l2PubicResolver, node, record)
+                    console.log('text3', {slot})
+                    const result = await l2PubicResolver.text(node, record)
+                    console.log('text4', {result})
+                    return {
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                        result: l2Resolverinterface.encodeFunctionResult("text(bytes32,string)", [result])
+                    }
+                }
             case "addr(bytes32)":
                 {
-                    console.log(5, {context, args})
-                    const { node:argsNode } = args;
                     const { node } = decodeAddr(args);
-                    console.log(6, {node, argsNode})
                     const slot = await getSlotForAddr(l2PubicResolver, node, 60);
-                    console.log(7, {slot})
                     const result = await l2PubicResolver.provider.getStorageAt(l2PubicResolver.address, slot)
                     const resolver = new ethers.Contract(l2PubicResolver.address, iface, l2PubicResolver.provider);
-                    const l2address = await resolver.addr(node)
-                    // const data = iface.encodeFunctionData('addr', [node]);
-                    console.log(8, {l2address})
-
-                    console.log(9, {result})
                     return {
                         slot, target: l2PubicResolver.address, layout: StorageLayout.FIXED,
                         result
                     }
                 }
-            // case "addr(bytes32,uint256)": {
-            //     const { node, coinType } = args;
-            //     const slot = await getSlotForAddr(l2PubicResolver, node, coinType);
-            //     const result = await l2PubicResolver["addr(bytes,bytes32,uint256)"](context, node, coinType)
-            //     return {
-            //         slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
-            //         result: l2Resolverinterface.encodeFunctionResult("addr(bytes32,uint256)", [result])
-            //     }
-
-            // }
+            case "addr(bytes32,uint256)": {
+                const { node, coinType } = args;
+                const slot = await getSlotForAddr(l2PubicResolver, node, coinType);
+                const result = await l2PubicResolver["addr(bytes32,uint256)"](node, coinType)
+                return {
+                    slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                    result: l2Resolverinterface.encodeFunctionResult("addr(bytes32,uint256)", [result])
+                }
+            }
             // case "ABI(bytes32,uint256)":
             //     {
             //         const { node, contentTypes } = args;
@@ -88,18 +81,17 @@ export async function handleBedrockCcipRequest(l2PubicResolver: OwnedResolver, c
             //             slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
             //             result: ethers.utils.defaultAbiCoder.encode(["bytes"], [Abi])
             //         }
-
-            //     }
-            // case "contenthash(bytes32)":
-            //     {
-            //         const { node } = args;
-            //         const slot = await getSlotForContentHash(l2PubicResolver, node);
-            //         const result = await l2PubicResolver.contenthash(context, node)
-            //         return {
-            //             slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
-            //             result: l2Resolverinterface.encodeFunctionResult("contenthash(bytes32)", [result])
-            //         }
-            //     }
+            // }
+            case "contenthash(bytes32)":
+                {
+                    const { node } = args;
+                    const slot = await getSlotForContentHash(l2PubicResolver, node);
+                    const result = await l2PubicResolver.contenthash(node)
+                    return {
+                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
+                        result: l2Resolverinterface.encodeFunctionResult("contenthash(bytes32)", [result])
+                    }
+                }
 
             // case "dnsRecord(bytes32,bytes32,uint16)":
             //     {
