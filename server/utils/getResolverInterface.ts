@@ -5,7 +5,7 @@ export function getResolverInterface() {
     return new ethers.utils.Interface([
         "function resolve(bytes calldata name,bytes calldata data) external view returns (bytes memory result)",
         // eslint-disable-next-line max-len
-        "function resolveWithProof(bytes calldata response, bytes calldata extraData) external view returns (bytes memory)",
+        "function resolveWithProof(bytes calldata response, bytes calldata extraData, bytes calldata verifierData) external view returns (bytes memory)",
         //Text
         "function text(bytes32 node, string calldata key) external view returns (string memory)",
         //Address

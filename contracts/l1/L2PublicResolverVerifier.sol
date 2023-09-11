@@ -9,7 +9,7 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 /**
  * @dev This contract allowas to overwrite the resolveWithProof function to handle data type that are not bytes
  */
-contract L2PublicResolverVerifier is BedrockCcipVerifier {
+abstract contract L2PublicResolverVerifier is BedrockCcipVerifier {
     constructor(
         address _owner,
         string memory _graphqlUrl,
@@ -25,14 +25,14 @@ contract L2PublicResolverVerifier is BedrockCcipVerifier {
      * @param extraData The calldata the gateway was called with
      * @return The decoded response data as a byte array.
      */
-    function resolveWithProof(bytes calldata response, bytes calldata extraData) public view override returns (bytes memory) {
+    function resolveWithProof(bytes calldata response, bytes calldata extraData, bytes calldata verifierData) public view override returns (bytes memory) {
         /**
          * Resolve with proof returns bytes. Because resolveWithProof is called via static call the data will
          * implicitly encoded as bytes again.
          * So if we would just return the super.resolveWithProof(response, extraData) the data would be encoded twice.
          * Because client libraries like ethers expect the data to be just encoded once, we have to decode the data.
          */
-        bytes memory encodedResponse = super.resolveWithProof(response, extraData);
+        bytes memory encodedResponse = super.resolveWithProof(response, extraData, verifierData);
         bytes memory decodedResponse = abi.decode(encodedResponse, (bytes));
         return decodedResponse;
     }
@@ -46,8 +46,8 @@ contract L2PublicResolverVerifier is BedrockCcipVerifier {
      * which means the client library expects an Ethereum address to be returned.
      * To meet this expectation, we convert the bytes into an Ethereum address and return it.
      */
-    function resolveWithAddress(bytes calldata response, bytes calldata extraData) public view returns (address) {
-        bytes memory res = super.resolveWithProof(response, extraData);
+    function resolveWithAddress(bytes calldata response, bytes calldata extraData, bytes calldata verifierData) public view returns (address) {
+        bytes memory res = super.resolveWithProof(response, extraData, verifierData);
         /**
          * The AddrResolver stores addresses as bytes instead of Ethereum addresses.
          * This is to support other blockchain addresses and not just EVM addresses.
@@ -68,8 +68,8 @@ contract L2PublicResolverVerifier is BedrockCcipVerifier {
      * the ABI but also the corresponding content type. So we're proving that the ABI is stored in the slot and then
      * return it along with the content type
      */
-    function resolveWithAbi(bytes calldata response, bytes calldata extraData) public view returns (bytes memory) {
-        bytes memory encodedResponse = super.resolveWithProof(response, extraData);
+    function resolveWithAbi(bytes calldata response, bytes calldata extraData, bytes calldata , bytes calldata verifierData) public view returns (bytes memory) {
+        bytes memory encodedResponse = super.resolveWithProof(response, extraData, verifierData);
 
         (, bytes memory data) = abi.decode(extraData[4:], (bytes, bytes));
         /**
