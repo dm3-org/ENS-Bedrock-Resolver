@@ -2822,10 +2822,10 @@ cbor@^8.1.0:
   dependencies:
     nofilter "^3.1.0"
 
-ccip-resolver@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/ccip-resolver/-/ccip-resolver-0.2.1.tgz#9ce27cb43473462ed7c376e5ef800a83a347a99a"
-  integrity sha512-Ih2/Q99pscPO7OUmmgrnbeIdd7Xbu46Yls+W/8Hvyxg1AiOVO45rWan8iblxYCkx5gB3K/W7T6bMYUGLZo1FeQ==
+ccip-resolver@0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/ccip-resolver/-/ccip-resolver-0.2.3.tgz#6ef147ad76dc1c01a540e9a99b5a4fcbe3cab303"
+  integrity sha512-FTl7ea91yPqq+tnWW6WteZPbhOwMWwPjWRjQcRVwVDGw1bwbBHzQ5utNy2FTnu/GT2VYnEqccBYP1KIzHS8D1Q==
   dependencies:
     "@defi-wonderland/smock" "^2.3.4"
     "@ensdomains/buffer" "0.0.10"
@@ -2836,7 +2836,6 @@ ccip-resolver@0.2.1:
     "@eth-optimism/sdk" "^2.0.2"
     axios "^1.4.0"
     body-parser "^1.20.2"
-    ens-contracts-legacy "https://github.com/ensdomains/resolvers.git#v0.1.7"
     express "^4.18.2"
     solidity-bytes-utils "^0.8.0"
     winston "^3.9.0"
