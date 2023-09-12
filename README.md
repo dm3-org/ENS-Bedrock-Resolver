@@ -229,12 +229,28 @@ Once you find out your gateway URL,
 
 # Deployments
 
-## Goerli
+## Optimism
 
-ERC3668Resolver : 0xc7F7528126C80341bB3340b73c72EFA4d1779d20
-L2PublicResolverVerifier : 0x8C838DE92b0f663aDAa70a711b3580eC86077485
+### Goerli
 
+-   ERC3668Resolver : 0xb65D106bEa8D6DBAC1497bD5822Ef3888B416492
+-   L2PublicResolverVerifier : 0x692c2A3F80b51D7e1F8de57de8ce0592dbe5fbEF
+-   Gateway urls: "https://op-ccip-resolver-taxr7iwrrq-uc.a.run.app/{sender}/{data}"
+-   Graphql Url:https://api.studio.thegraph.com/query/1397/ens-base-subgraph-makototest1/version/latest
 
-## Optimsim Goerli
+### Optimsim Goerli
 
-L2PublicResolver: 0x128024860A95A9Da90c38A5a0C9288BA0F0dC8e8
+-   L2PublicResolver: 0x3d6bbfdce5c484d9177f3a7d30e3bfe7add5051e
+
+## Base
+
+### Goerli
+
+-   ERC3668Resolver : 0x195724998eE4A8282bC1d63a1ebdD49AA2279833.
+-   L2PublicResolverVerifier : 0xE926106872Dacf7fb178532Ab0E51FC48374C220
+-   Gateway urls: ["https://base-ccip-resolver-taxr7iwrrq-uc.a.run.app/{sender}/{data}"]
+-   Graphql Url:https://api.studio.thegraph.com/query/1397/ens-base-subgraph-makototest1/version/latest
+
+### Base Goerli
+
+-   L2PublicResolver: 0x4088b38fd7de9a5758139552a136fcb114c5572e
