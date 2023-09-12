@@ -43,16 +43,6 @@ export async function handleBedrockCcipRequest(l2PubicResolver: L2PublicResolver
                         result: l2Resolverinterface.encodeFunctionResult("text(bytes32,string)", [result])
                     }
                 }
-            case "name(bytes32)":
-                {
-                    const { node } = decodeName(context, args);
-                    const slot = await getSlotForName(l2PubicResolver, context, node);
-                    const result = await l2PubicResolver.name(context, node)
-                    return {
-                        slot, target: l2PubicResolver.address, layout: StorageLayout.DYNAMIC,
-                        result: l2Resolverinterface.encodeFunctionResult("name(bytes32)", [result])
-                    }
-                }
             case "addr(bytes32)":
                 {
                     const { node } = decodeAddr(context, args);
