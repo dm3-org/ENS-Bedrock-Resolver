@@ -1,11 +1,12 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { L2PublicResolver } from "../../../typechain";
-export async function getSlotForContentHash(l2PublicResolver: L2PublicResolver,context: string, node: string): Promise<string> {
+export async function getSlotForContentHash(l2PublicResolver: L2PublicResolver, context: string, node: string): Promise<{ slot: string, version: BigNumber }> {
     //The storage slot within the particular contract
-    const CONTENTHASH_SLOT_NAME = 4;
+    const CONTENTHASH_SLOT_NAME = 3;
     const version = await l2PublicResolver.recordVersions(context, node);
 
-    return getStorageSlotForContentHash(CONTENTHASH_SLOT_NAME, version.toNumber(), context, node);
+    const slot = getStorageSlotForContentHash(CONTENTHASH_SLOT_NAME, version.toNumber(), context, node);
+    return { slot, version };
 }
 
 function getStorageSlotForContentHash(slot: number, versionNumber: number, context: string, node: string,) {

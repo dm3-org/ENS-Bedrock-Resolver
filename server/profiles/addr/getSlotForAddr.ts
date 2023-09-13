@@ -1,11 +1,13 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { L2PublicResolver } from "../../../typechain";
 
-export async function getSlotForAddr(l2PublicResolver: L2PublicResolver, context: string, node: string, coinType: number): Promise<string> {
+export async function getSlotForAddr(l2PublicResolver: L2PublicResolver, context: string, node: string, coinType: number): Promise<{ slot: string, version: BigNumber }> {
     //The storage slot within the particular contract
     const ADDR_SLOT_NAME = 1;
     const version = await l2PublicResolver.recordVersions(context, node);
-    return getStorageSlotForAddr(ADDR_SLOT_NAME, version.toNumber(), context, node, coinType);
+    const slot = await getStorageSlotForAddr(ADDR_SLOT_NAME, version.toNumber(), context, node, coinType);
+
+    return { slot, version };
 }
 
 function getStorageSlotForAddr(slot: number, versionNumber: number, context: string, node: string, coinType: number) {
@@ -15,3 +17,4 @@ function getStorageSlotForAddr(slot: number, versionNumber: number, context: str
     const outerHash = ethers.utils.solidityKeccak256(["uint256", "bytes32"], [coinType, nodeHash]);
     return outerHash;
 }
+
