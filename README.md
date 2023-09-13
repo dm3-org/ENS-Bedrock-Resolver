@@ -164,6 +164,10 @@ export ERC3668_RESOLVER_ADDRESS=<ERC3668_RESOLVER_ADDRESS>
 
 `npx hardhat run ./scripts/setCcipResolver.ts --network goerli`
 
+## Setup Verifier
+
+`npx hardhat run ./scripts/setVerifierForDomain.ts --network goerli`
+
 ## Setup Gateway
 
 To run a gateway perform the following steps, create a .env file and copy the content of env.example and make sure the follwoing fields are set correctly

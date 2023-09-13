@@ -10,7 +10,6 @@ const ENS_REGISTRY = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
 
 const DEFAULT_VERIFIER_ADDRESS = process.env.L2_PUBLIC_RESOLVER_VERIFIER_ADDRESS;
 const DEFAULT_VERIFIER_URL = process.env.DEFAULT_VERIFIER_URL;
-
 async function main() {
     if(!(DEFAULT_VERIFIER_ADDRESS && DEFAULT_VERIFIER_URL)){throw("Must set DEFAULT_VERIFIER_ADDRESS and DEFAULT_VERIFIER_URL")}
     const [deployer] = await hre.ethers.getSigners();
@@ -22,7 +21,7 @@ async function main() {
         new ERC3668Resolver__factory()
             .connect(deployer)
             .deploy(
-                ENS_REGISTRY, namewrapper, DEFAULT_VERIFIER_ADDRESS, [DEFAULT_VERIFIER_URL],
+                ENS_REGISTRY, namewrapper, [DEFAULT_VERIFIER_URL],
                 {
                     // gasLimit: 30000000,
                     // gasPrice: "90000000"
