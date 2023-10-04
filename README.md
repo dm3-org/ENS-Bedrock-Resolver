@@ -142,6 +142,8 @@ export L2_RESOLVER_ADDRESS=<L2_RESOLVER_ADDRESS>
 ENS_NAME=<ENS_NAME> npx hardhat run ./scripts/setAddr.ts --network <optimismGoerli|baseGoerli>
 ```
 
+npx hardhat run ./scripts/setAddr.ts --network baseGoerli
+
 ### PublicResolverVerifier
 
 ```
@@ -233,12 +235,41 @@ Once you find out your gateway URL,
 
 # Deployments
 
-## Goerli
+## Optimism
 
-ERC3668Resolver : 0xFCBc6e674e2D33d6c9aE6Ea0Ab274b659AdB5830
-L2PublicResolverVerifier : 0x8EA0e775A0F174B580F7bdB684DbCd1074CB8300
-BEDROCK_PROOF_VERIFIER_ADDRESS : 0xEd6a104BfF6B6044775Ab3D52f4d57f3b3c8D47b
+### Goerli
 
-## Optimsim Goerli
+-   ERC3668Resolver : 0xb65D106bEa8D6DBAC1497bD5822Ef3888B416492
+-   L2PublicResolverVerifier : 0x692c2A3F80b51D7e1F8de57de8ce0592dbe5fbEF
+-   Gateway urls: "https://op-ccip-resolver-taxr7iwrrq-uc.a.run.app/{sender}/{data}"
+-   Graphql Url:https://api.studio.thegraph.com/query/1397/ens-base-subgraph-makototest1/version/latest
 
-OwnedResolver: 0xfdf30e5e06d728704a42bac6e0326538e659a67b
+### Optimsim Goerli
+
+-   L2PublicResolver: 0x3d6bbfdce5c484d9177f3a7d30e3bfe7add5051e
+
+## Base
+
+### Goerli
+
+-   ERC3668Resolver : 0x195724998eE4A8282bC1d63a1ebdD49AA2279833.
+-   L2PublicResolverVerifier : 0xE926106872Dacf7fb178532Ab0E51FC48374C220
+-   Gateway urls: ["https://base-ccip-resolver-taxr7iwrrq-uc.a.run.app/{sender}/{data}"]
+-   Graphql Url:https://api.studio.thegraph.com/query/1397/ens-base-subgraph-makototest1/version/latest
+
+### Base Goerli
+
+-   L2PublicResolver: 0x4088b38fd7de9a5758139552a136fcb114c5572e
+
+### Goerli
+
+## Refactored version (Base)
+-   ERC3668Resolver : 0xc3766eb7f681e426329c98C0a5cEE40b38c94dc9
+-   L2PublicResolverVerifier :0x4e7Fac462eBfDb3B906EE4AF08F1db765eaae406
+-   Gateway urls:
+-   Graphql Url:
+
+### Base Goerli
+
+-   L2PublicResolver: 0xfdf30e5e06d728704a42bac6e0326538e659a67b
+

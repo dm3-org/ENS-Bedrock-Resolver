@@ -5,13 +5,15 @@ const URL = "http://localhost:8081/{sender}/{data}";
 
 const ERC3668_RESOLVER_ADDRESS = process.env.ERC3668_RESOLVER_ADDRESS
 const L2_PUBLIC_RESOLVER_VERIFIER_ADDRESS=process.env.L2_PUBLIC_RESOLVER_VERIFIER_ADDRESS
-
+const VERIFIER_DATA = process.env.L2_RESOLVER_ADDRESS
 
 export const setVerifierForDomain = async () => {
     const [signer] = await hre.ethers.getSigners();
     const node = ethers.utils.namehash(process.env.ENS_NAME);
-    const VERIFIER_DATA = process.env.L2_RESOLVER_ADDRESS
-    if(!(node && ERC3668_RESOLVER_ADDRESS && VERIFIER_DATA)) throw("ENS_NAME, ERC3668_RESOLVER_ADDRESS and L2_RESOLVER_ADDRESS must be set")
+    console.log({
+        node, L2_PUBLIC_RESOLVER_VERIFIER_ADDRESS,  ERC3668_RESOLVER_ADDRESS, VERIFIER_DATA
+    })
+    if(!(node && L2_PUBLIC_RESOLVER_VERIFIER_ADDRESS &&  ERC3668_RESOLVER_ADDRESS && VERIFIER_DATA)) throw("ENS_NAME, L2_PUBLIC_RESOLVER_VERIFIER_ADDRESS, ERC3668_RESOLVER_ADDRESS and L2_RESOLVER_ADDRESS must be set")
     const registryInterface = new ethers.utils.Interface([
         "function setVerifierForDomain(bytes32 node, address resolverAddress, string[] memory urls, bytes memory verifierData) external ",
     ]);
