@@ -6,7 +6,7 @@ Everything is configured already so to set it up you just have to follow the con
 
 # Contracts
 
-## L2PubicResolver (L2)
+## l2PublicResolver (L2)
 
 The L2PublicResolver is a Smart Contract derived from the ENS PublicResolver implementation. The functionality for setting records remains consistent with the original implementation. However, when retrieving a record, the caller is required to provide context, specifically the address of the record as per the ENS registry.
 

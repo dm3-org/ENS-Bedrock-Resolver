@@ -24,3 +24,11 @@ export function getResolverInterface() {
         "function zonehash(bytes32 node) external view  returns (bytes memory)"
     ]);
 }
+export function getIResolverServiceInterface() {
+    return new ethers.utils.Interface([
+        "function resolve(bytes calldata name,bytes calldata data,bytes calldata verifierData) public view returns (bytes memory)"
+    ]);
+}
+
+
+

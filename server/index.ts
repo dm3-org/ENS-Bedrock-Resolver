@@ -14,11 +14,6 @@ const app = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb' }));
 
-const resolverAddress = process.env.L2_RESOLVER_ADDRESS;
-if (!resolverAddress) {
-    throw new Error('L2_RESOLVER_ADDRESS not set');
-}
-
 const server = http.createServer(app);
 
 app.use(cors());
@@ -37,15 +32,12 @@ app.use(bodyParser.json());
     }
     const provider = new ethers.providers.StaticJsonRpcProvider(L2_PROVIDER_URL);
 
-    app.use('/', EnsBedrockHandler(provider, resolverAddress));
+    app.use('/', EnsBedrockHandler(provider));
 })();
 
 const port = '8887';
 server.listen(port, () => {
     app.locals.logger.info(
         '[Ens Handler] listening at port ' + port + ' and dir ' + __dirname,
-    );
-    app.locals.logger.info(
-        '[Ens Handler] Serving L2 Public Resolver Address ' + resolverAddress
     );
 });

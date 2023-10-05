@@ -1,20 +1,12 @@
 import express from 'express';
 // import { L2PublicResolver, L2PublicResolver__factory } from "../../typechain";
-import { OwnedResolver  } from "../../typechain/contracts/resolvers";
-import { OwnedResolver__factory } from "../../typechain/factories/contracts/resolvers";
 
 import { handleBedrockCcipRequest } from "./handleBedrockCcipRequest";
 import { ethers } from 'ethers';
 
-export function EnsBedrockHandler(provider: ethers.providers.StaticJsonRpcProvider, l2ResolverAddress: string) {
+
+export function EnsBedrockHandler(provider: ethers.providers.StaticJsonRpcProvider) {
     const router = express.Router();
-
-    const l2PublicResolver = new ethers.Contract(
-        l2ResolverAddress,
-        OwnedResolver__factory.createInterface(),
-        provider
-    ) as OwnedResolver
-
     router.get(
         '/:resolverAddr/:calldata',
         async (
@@ -22,8 +14,9 @@ export function EnsBedrockHandler(provider: ethers.providers.StaticJsonRpcProvid
             res: express.Response,
         ) => {
             const calldata = req.params.calldata.replace('.json', '');
+        
             try {
-                const response = await handleBedrockCcipRequest(l2PublicResolver, calldata);
+                const response = await handleBedrockCcipRequest(provider, calldata);
 
                 if (!response) {
                     return res.status(404).send({ message: `unsupported signature` });
